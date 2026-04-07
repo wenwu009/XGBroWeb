@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>YW专属惊喜基地</title>
+    <title>YW的专属惊喜基地</title>
     <link href="https://fonts.googleapis.com/css2?family=Long+Cang&display=swap" rel="stylesheet">
     <style>
         :root {
             --heart-red: #ff3860;
             --text-gold: #ffeb3b;
-            --subtext-pink: #ff4d6d;
+            --subtext-pink: #ff7eb3;
         }
 
-        /* 1. 梦幻背景与全屏布局 */
+        /* 1. 全屏梦幻星空背景 */
         body { 
-            background: radial-gradient(circle at center, #1a0f1f 0%, #0a0a0f 100%); /* 深紫色星空背景 */
+            background: radial-gradient(circle at center, #1a0f1f 0%, #0a0a0f 100%); 
             margin: 0; 
             padding: 0; 
             overflow: hidden; 
@@ -22,12 +22,12 @@
             flex-direction: column; 
             justify-content: space-around; 
             align-items: center; 
-            height: 100vh;
+            height: 100svh; 
             font-family: 'Long Cang', cursive;
-            touch-action: none; /* 防止手机缩放干扰 */
+            touch-action: none; /* 防止手机端交互干扰 */
         }
 
-        /* 2. 全屏粒子画布 */
+        /* 2. 背景粒子画布（樱花漂浮层） */
         #universe {
             position: absolute;
             top: 0;
@@ -37,7 +37,7 @@
             z-index: 1;
         }
 
-        /* 3. 文字内容：增加了发光层级 */
+        /* 3. 文字内容：金黄色发光 */
         .text-content {
             z-index: 10;
             text-align: center;
@@ -59,11 +59,11 @@
             margin-top: 20px;
         }
 
-        /* 4. 核心大爱心：心跳脉冲 */
+        /* 4. 核心脉冲大爱心 */
         .heart-container {
             position: relative;
-            width: 140px;
-            height: 140px;
+            width: 120px;
+            height: 120px;
             z-index: 10;
             cursor: pointer;
             transition: transform 0.1s;
@@ -97,15 +97,15 @@
             100% { transform: scale(1) rotate(-45deg); }
         }
 
-        /* 点击时的反馈 */
+        /* 点击反馈：爱心缩小 */
         .heart-container:active {
             transform: scale(0.85);
         }
 
-        /* 5. 底部版权与提示 */
+        /* 5. 底部版权提示 */
         .footer {
             z-index: 10;
-            color: rgba(255, 77, 109, 0.6);
+            color: rgba(255, 126, 179, 0.6);
             font-size: 0.9rem;
             margin-bottom: 20px;
         }
@@ -129,9 +129,9 @@
         const canvas = document.getElementById('universe');
         const ctx = canvas.getContext('2d');
         let w, h, dpr;
-        let petals = [], stars = [];
+        let petals = [], stars = [], popHearts = [];
 
-        // 初始化画布和静态星星
+        // 初始化画布和静态星尘
         function initCanvas() {
             dpr = window.devicePixelRatio || 1;
             w = window.innerWidth;
@@ -140,7 +140,6 @@
             canvas.height = h * dpr;
             ctx.scale(dpr, dpr);
             stars = [];
-            // 初始化静态星尘背景
             for(let i=0; i<150; i++) {
                 stars.push({
                     x: Math.random() * w, y: Math.random() * h,
@@ -152,25 +151,26 @@
         window.addEventListener('resize', initCanvas);
         initCanvas();
 
-        // 真正的粒子樱花瓣类
+        // 樱花漂流瓶类（新花瓣算法）
         class Petal {
             constructor() { this.reset(); this.y = Math.random() * h; /* 初始分布全屏 */ }
             reset() {
                 this.x = Math.random() * w; this.y = -50;
-                this.size = Math.random() * 10 + 6;
-                this.speedY = Math.random() * 1.5 + 1; // 慢慢下落
-                this.speedX = Math.random() * 1 - 0.5; // 轻微摆动
+                this.size = Math.random() * 8 + 6; // 维持丝滑感的黄金尺寸
+                this.speedY = Math.random() * 1.5 + 1;
+                this.speedX = Math.random() * 1 - 0.5;
                 this.rotation = Math.random() * 360; this.rotationSpeed = (Math.random()-0.5)*2;
-                this.opacity = Math.random() * 0.5 + 0.5;
+                this.opacity = Math.random() * 0.6 + 0.4;
             }
             draw() {
                 ctx.save(); ctx.globalAlpha = this.opacity; ctx.translate(this.x, this.y); ctx.rotate(this.rotation * Math.PI / 180);
-                // 绘制豆瓣形状（模拟花瓣）
+                // 豆瓣花瓣（新形状贝塞尔曲线）
                 const grad = ctx.createLinearGradient(0, 0, this.size, this.size);
                 grad.addColorStop(0, '#ffc0cb'); grad.addColorStop(1, '#ff69b4');
                 ctx.fillStyle = grad; ctx.beginPath();
                 const d = this.size;
-                ctx.moveTo(0, d/2); ctx.bezierCurveTo(-d/2, -d/2, -d, d/3, 0, d); ctx.bezierCurveTo(d, d/3, d/2, -d/2, 0, d/2); ctx.fill(); ctx.restore();
+                ctx.moveTo(0, d/2); ctx.bezierCurveTo(-d/2, -d/2, -d, d/3, 0, d); ctx.bezierCurveTo(d, d/3, d/2, -d/2, 0, d/2);
+                ctx.fill(); ctx.restore();
             }
             update() {
                 this.y += this.speedY; this.x += this.speedX + Math.sin(this.y * 0.02) * 0.5; this.rotation += this.rotationSpeed;
@@ -178,23 +178,24 @@
             }
         }
 
-        // 点击产生的粒子小爱心
+        // 点击产生的粒子小爱心（爆炸效果）
         class PopHeart {
             constructor(x, y) {
                 this.x = x; this.y = y;
                 this.size = Math.random() * 10 + 5;
                 this.vx = (Math.random() - 0.5) * 15;
                 this.vy = (Math.random() - 0.5) * 15;
-                this.life = 1; // 初始生命
+                this.life = 1;
                 const colors = ['#ff4b4b', '#ff7eb3', '#f44336'];
                 this.color = colors[Math.floor(Math.random()*colors.length)];
             }
             draw() {
                 ctx.save(); ctx.translate(this.x, this.y); ctx.globalAlpha = this.life;
                 ctx.fillStyle = this.color; ctx.beginPath();
-                // 绘制小爱心形状
+                // 樱花瓣符号
                 const d = this.size;
-                ctx.moveTo(0, d/2); ctx.bezierCurveTo(-d/2, -d/2, -d, d/3, 0, d); ctx.bezierCurveTo(d, d/3, d/2, -d/2, 0, d/2); ctx.fill(); ctx.restore();
+                ctx.moveTo(0, d/2); ctx.bezierCurveTo(-d/2, -d/2, -d, d/3, 0, d); ctx.bezierCurveTo(d, d/3, d/2, -d/2, 0, d/2);
+                ctx.fill(); ctx.restore();
             }
             update() {
                 this.x += this.vx; this.y += this.vy; this.vy += 0.5; // 重力
@@ -203,21 +204,20 @@
             }
         }
 
-        const petals = [], popHearts = [];
         for (let i = 0; i < 60; i++) petals.push(new Petal());
 
         function animate() {
-            // 背景清理并加色拖尾（营造一点梦幻感）
-            ctx.fillStyle = 'rgba(26, 15, 31, 0.2)';
+            // 背景清理并加拖尾（星空深邃感）
+            ctx.fillStyle = 'rgba(26, 15, 31, 0.2)'; // 樱花色星云背景
             ctx.fillRect(0, 0, w, h);
-            // 画群星
+            // 画闪烁星尘
             stars.forEach(s => {
                 s.opacity += s.blink; if(s.opacity > 1 || s.opacity < 0) s.blink *= -1;
                 ctx.fillStyle = `rgba(255, 235, 59, ${Math.max(0, s.opacity)})`; ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2); ctx.fill();
             });
             // 画樱花
             petals.forEach(p => { p.update(); p.draw(); });
-            // 画爆炸爱心
+            // 画点击爆炸爱心粒子
             popHearts.forEach((p, i) => { p.update(); p.draw(); if(p.life <= 0) popHearts.splice(i, 1); });
             requestAnimationFrame(animate);
         }
