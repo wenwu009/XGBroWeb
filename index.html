@@ -2,27 +2,62 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>XG-BRO Legacy | 2026</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YW傻鸟专属</title>
     <style>
-        body { background-color: #0d1117; color: #c9d1d9; font-family: 'Courier New', monospace; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { text-align: center; border: 1px solid #30363d; padding: 50px; border-radius: 10px; background-color: #161b22; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        h1 { color: #58a6ff; font-size: 2.5em; margin-bottom: 20px; text-transform: uppercase; border-bottom: 2px solid #58a6ff; display: inline-block; padding-bottom: 10px; }
-        p { color: #8b949e; font-size: 1.2em; line-height: 1.6; }
-        .highlight { color: #f85149; font-weight: bold; }
-        .success { color: #3fb950; font-weight: bold; }
+        body { background-color: #121212; color: #ffeb3b; font-family: 'Long Cang', cursive; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
+        h1 { font-size: 3.5em; text-align: center; line-height: 1.4; text-shadow: 0 0 10px #ffeb3b; margin-bottom: 50px; }
+        .heart-container { position: relative; width: 200px; height: 200px; cursor: pointer; transition: transform 0.2s; }
+        .heart-container:hover { transform: scale(1.1); }
+        .heart { background-color: #f44336; width: 100px; height: 100px; position: absolute; top: 50px; left: 50px; transform: rotate(-45deg); box-shadow: 0 0 20px #f44336; }
+        .heart::before, .heart::after { content: ''; background-color: #f44336; width: 100px; height: 100px; border-radius: 50%; position: absolute; }
+        .heart::before { top: -50px; left: 0; }
+        .heart::after { top: 0; left: 50px; }
+
+        /* 点击特效 */
+        .spark { position: absolute; width: 10px; height: 10px; background-color: #ff9800; border-radius: 50%; opacity: 0; pointer-events: none; }
+        @keyframes sparkle {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(4) translate(var(--tw-translate-x), var(--tw-translate-y)); opacity: 0; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>xgbro.com</h1>
-        <p>// Project: XG-Bro Legacy Outpost</p>
-        <p>// Created by: <span class="highlight">X哥</span> & <span class="highlight">老G</span></p>
-        <p>// Date: 2026-04-07</p>
-        <p>// Location: Cyber Space (Connected from Legion 5070)</p>
-        <p>--------------------------------------------------</p>
-        <p>std::cout << "大傻鸟！" << std::endl;</p>
-        <p>status: <span class="success">[Domain Registered!]</span></p>
-        <p>target: [Waiting for sn.img to unlock Y700...]</p>
+    <h1>我亲爱的大傻鸟，<br>想我的时候记得点一下这个大大的爱心</h1>
+    <div class="heart-container" onclick="createSparkles(event)">
+        <div class="heart"></div>
     </div>
+
+    <script>
+        function createSparkles(event) {
+            const container = document.querySelector('.heart-container');
+            const rect = container.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            for (let i = 0; i < 15; i++) {
+                const spark = document.createElement('div');
+                spark.classList.add('spark');
+                spark.style.left = x + 'px';
+                spark.style.top = y + 'px';
+                
+                // 随机方向和颜色
+                const colors = ['#ff9800', '#ffeb3b', '#f44336', '#e91e63'];
+                spark.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // CSS 变量实现随机偏移
+                spark.style.setProperty('--tw-translate-x', (Math.random() * 200 - 100) + 'px');
+                spark.style.setProperty('--tw-translate-y', (Math.random() * 200 - 100) + 'px');
+                
+                spark.style.animation = 'sparkle 0.8s ease-out forwards';
+                container.appendChild(spark);
+                
+                // 动画结束后移除元素
+                setTimeout(() => {
+                    spark.remove();
+                }, 800);
+            }
+        }
+    </script>
 </body>
 </html>
