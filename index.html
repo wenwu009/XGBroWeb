@@ -3,11 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YW傻鸟专属基地</title>
+    <title>XG-Bro | 专属梦幻星空</title>
     <link href="https://fonts.googleapis.com/css2?family=Long+Cang&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --heart-color: #ff4d6d;
+            --accent-color: #ffeb3b;
+        }
+
         body { 
-            background: #020205; 
+            background: #05050a; 
             margin: 0; 
             overflow: hidden; 
             display: flex; 
@@ -16,6 +21,7 @@
             align-items: center; 
             height: 100vh;
             font-family: 'Long Cang', cursive;
+            cursor: crosshair;
         }
 
         #universe {
@@ -27,69 +33,81 @@
             z-index: 1;
         }
 
-        h1 {
-            color: #ffeb3b;
-            font-size: 3.5rem;
-            text-align: center;
+        /* 标题：增加渐显效果 */
+        .content {
             z-index: 10;
-            text-shadow: 0 0 15px rgba(255, 235, 59, 0.6);
-            user-select: none;
+            text-align: center;
             pointer-events: none;
-            line-height: 1.6;
+            user-select: none;
+            animation: fadeIn 3s ease-in;
         }
 
-        /* 核心爱心：增加了发光层级 */
+        h1 {
+            color: var(--accent-color);
+            font-size: 3.2rem;
+            text-shadow: 0 0 20px rgba(255, 235, 59, 0.4);
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+
+        /* 核心爱心：双层外发光 */
         .heart-box {
             position: relative;
-            width: 150px;
-            height: 150px;
+            width: 120px;
+            height: 120px;
             z-index: 10;
             cursor: pointer;
-            transition: transform 0.1s;
+            pointer-events: auto;
         }
 
         .heart {
-            background-color: #f44336;
-            width: 100px;
-            height: 100px;
+            background-color: var(--heart-color);
+            width: 80px;
+            height: 80px;
             position: absolute;
             transform: rotate(-45deg);
-            box-shadow: 0 0 50px rgba(244, 67, 54, 0.8);
-            pointer-events: none;
+            box-shadow: 0 0 40px rgba(255, 77, 109, 0.6);
+            animation: heartbeat 1.4s ease-in-out infinite;
         }
+
         .heart::before, .heart::after {
             content: '';
-            background-color: #f44336;
-            width: 100px;
-            height: 100px;
+            background-color: var(--heart-color);
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             position: absolute;
         }
-        .heart::before { top: -50px; left: 0; }
-        .heart::after { top: 0; left: 50px; }
+        .heart::before { top: -40px; left: 0; }
+        .heart::after { top: 0; left: 40px; }
 
-        /* 点击时的缩放反馈 */
-        .heart-box:active {
-            transform: scale(0.85);
+        @keyframes heartbeat {
+            0% { transform: scale(1) rotate(-45deg); filter: brightness(1); }
+            14% { transform: scale(1.15) rotate(-45deg); filter: brightness(1.2); }
+            28% { transform: scale(1) rotate(-45deg); }
+            42% { transform: scale(1.15) rotate(-45deg); }
+            70% { transform: scale(1) rotate(-45deg); }
         }
 
-        /* 自动呼吸效果 */
-        @keyframes heartPulse {
-            0% { transform: scale(1); filter: brightness(1); }
-            50% { transform: scale(1.05); filter: brightness(1.2); }
-            100% { transform: scale(1); filter: brightness(1); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .heart-active {
-            animation: heartPulse 2s ease-in-out infinite;
+
+        /* 手机端适配 */
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
         }
     </style>
 </head>
 <body>
     <canvas id="universe"></canvas>
     
-    <h1>我亲爱的大傻鸟，<br>想我的时候记得点一下这个大大的爱心</h1>
+    <div class="content">
+        <h1>我亲爱的大傻鸟，<br>想我的时候记得点一下这个大大的爱心</h1>
+    </div>
     
-    <div class="heart-box heart-active" id="mainHeart">
+    <div class="heart-box" id="mainHeart">
         <div class="heart"></div>
     </div>
 
@@ -97,21 +115,19 @@
         const canvas = document.getElementById('universe');
         const ctx = canvas.getContext('2d');
         let w, h;
-        let meteors = [];
-        let shockwaves = [];
-        let sparks = [];
-        let stars = [];
+        let meteors = [], stars = [], particles = [];
 
         function initSize() {
             w = canvas.width = window.innerWidth;
             h = canvas.height = window.innerHeight;
-            // 初始化静态星星
             stars = [];
-            for(let i=0; i<150; i++) {
+            // 生成星星
+            for(let i=0; i<200; i++) {
                 stars.push({
                     x: Math.random() * w,
                     y: Math.random() * h,
                     size: Math.random() * 1.5,
+                    blink: Math.random() * 0.05,
                     opacity: Math.random()
                 });
             }
@@ -119,27 +135,28 @@
         window.addEventListener('resize', initSize);
         initSize();
 
-        // 高级感流星类
+        // 幻彩流星类
         class Meteor {
             constructor() { this.reset(); }
             reset() {
                 this.x = Math.random() * w;
-                this.y = -200;
-                this.len = Math.random() * 150 + 100;
-                this.speed = Math.random() * 15 + 10;
-                this.color = ["#ffeb3b", "#ff4b4b", "#fff"][Math.floor(Math.random()*3)];
+                this.y = -Math.random() * h;
+                this.len = Math.random() * 100 + 150;
+                this.speed = Math.random() * 10 + 6;
+                this.color = ["#ffeb3b", "#ff758c", "#a29bfe"][Math.floor(Math.random()*3)];
             }
             draw() {
-                const gradient = ctx.createLinearGradient(this.x, this.y, this.x + this.len, this.y - this.len);
-                gradient.addColorStop(0, this.color);
-                gradient.addColorStop(1, 'transparent');
-                ctx.strokeStyle = gradient;
-                ctx.lineWidth = 1.2;
-                ctx.lineCap = 'round';
+                ctx.save();
+                const grad = ctx.createLinearGradient(this.x, this.y, this.x + this.len, this.y - this.len);
+                grad.addColorStop(0, this.color);
+                grad.addColorStop(1, 'transparent');
+                ctx.strokeStyle = grad;
+                ctx.lineWidth = 1.5;
                 ctx.beginPath();
                 ctx.moveTo(this.x, this.y);
                 ctx.lineTo(this.x + this.len, this.y - this.len);
                 ctx.stroke();
+                ctx.restore();
             }
             update() {
                 this.x -= this.speed;
@@ -148,87 +165,75 @@
             }
         }
 
-        // 点击产生的冲击波类
-        class Shockwave {
+        // 飞散的爱心粒子类
+        class HeartParticle {
             constructor(x, y) {
-                this.x = x; this.y = y;
-                this.r = 10;
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 10 + 5;
+                this.vx = (Math.random() - 0.5) * 10;
+                this.vy = (Math.random() - 0.5) * 10;
                 this.opacity = 1;
+                this.rot = Math.random() * 360;
             }
             draw() {
-                ctx.strokeStyle = `rgba(255, 235, 59, ${this.opacity})`;
-                ctx.lineWidth = 3;
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rot * Math.PI / 180);
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = '#ff4d6d';
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-                ctx.stroke();
-            }
-            update() {
-                this.r += 12;
-                this.opacity -= 0.02;
-            }
-        }
-
-        // 细碎的魔法火花
-        class Spark {
-            constructor(x, y) {
-                this.x = x; this.y = y;
-                this.vx = (Math.random() - 0.5) * 15;
-                this.vy = (Math.random() - 0.5) * 15;
-                this.size = Math.random() * 3;
-                this.life = 1;
-            }
-            draw() {
-                ctx.fillStyle = `rgba(255, 255, 255, ${this.life})`;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                // 绘制一个小爱心
+                const d = this.size;
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(-d/2, -d/2, -d, d/3, 0, d);
+                ctx.bezierCurveTo(d, d/3, d/2, -d/2, 0, 0);
                 ctx.fill();
+                ctx.restore();
             }
             update() {
                 this.x += this.vx;
                 this.y += this.vy;
-                this.vx *= 0.95;
-                this.vy *= 0.95;
-                this.life -= 0.03;
+                this.opacity -= 0.015;
+                this.rot += 2;
             }
         }
 
-        for (let i = 0; i < 8; i++) meteors.push(new Meteor());
+        for (let i = 0; i < 6; i++) meteors.push(new Meteor());
 
         function animate() {
-            ctx.fillStyle = '#020205';
+            // 营造拖尾背景
+            ctx.fillStyle = 'rgba(5, 5, 15, 0.25)';
             ctx.fillRect(0, 0, w, h);
 
-            // 画背景星尘
+            // 画闪烁的星星
             stars.forEach(s => {
-                ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
+                s.opacity += s.blink;
+                if(s.opacity > 1 || s.opacity < 0) s.blink *= -1;
+                ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0, s.opacity)})`;
                 ctx.beginPath();
                 ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
                 ctx.fill();
             });
 
-            // 绘制流星
+            // 画流星
             meteors.forEach(m => { m.update(); m.draw(); });
 
-            // 绘制冲击波
-            shockwaves.forEach((sw, i) => {
-                sw.update(); sw.draw();
-                if (sw.opacity <= 0) shockwaves.splice(i, 1);
-            });
-
-            // 绘制火花
-            sparks.forEach((sp, i) => {
-                sp.update(); sp.draw();
-                if (sp.life <= 0) sparks.splice(i, 1);
+            // 画点击散开的爱心
+            particles.forEach((p, i) => {
+                p.update();
+                p.draw();
+                if(p.opacity <= 0) particles.splice(i, 1);
             });
 
             requestAnimationFrame(animate);
         }
 
         document.getElementById('mainHeart').addEventListener('click', (e) => {
-            // 产生冲击波
-            shockwaves.push(new Shockwave(e.clientX, e.clientY));
-            // 产生魔法火花
-            for(let i=0; i<20; i++) sparks.push(new Spark(e.clientX, e.clientY));
+            // 点击震散出一堆小爱心
+            for(let i=0; i<18; i++) {
+                particles.push(new HeartParticle(e.clientX, e.clientY));
+            }
         });
 
         animate();
