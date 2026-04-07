@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XG-Bro Legacy | 代码深空</title>
-    <link href="https://fonts.googleapis.com/css2?family=Long+Cang&family=Source+Code+Pro&display=swap" rel="stylesheet">
+    <title>XG-Bro Legacy | 引力奇点</title>
+    <link href="https://fonts.googleapis.com/css2?family=Long+Cang&display=swap" rel="stylesheet">
     <style>
-        :root { --heart-color: #ff4d6d; --accent-color: #ffeb3b; }
-        body { background: #000; margin: 0; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; font-family: 'Long Cang', cursive; cursor: crosshair; }
+        :root { --heart-color: #f44336; --accent-color: #ffeb3b; }
+        body { background: #010103; margin: 0; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; font-family: 'Long Cang', cursive; cursor: crosshair; }
         #universe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
         .content { z-index: 10; text-align: center; pointer-events: none; user-select: none; animation: fadeIn 3s ease-in; }
         h1 { color: var(--accent-color); font-size: 3.2rem; text-shadow: 0 0 20px rgba(255, 235, 59, 0.4); line-height: 1.6; margin-bottom: 40px; }
@@ -30,53 +30,58 @@
     <script>
         const canvas = document.getElementById('universe');
         const ctx = canvas.getContext('2d');
-        let w, h;
-        // 专属情书内容
-        const personalizedTexts = ["I Love YW", "文武009", "2026-04-08", "赛博情书", "YW专属", "Gemma 4"];
+        let w, h, target;
+        let particles = [];
 
         function initSize() {
             w = canvas.width = window.innerWidth;
             h = canvas.height = window.innerHeight;
-            ctx.font = '20px Source Code Pro';
-            initDrops();
+            target = { x: w / 2, y: h / 2 };
+            particles = [];
+            for (let i = 0; i < 400; i++) particles.push(new Particle());
         }
         window.addEventListener('resize', initSize);
-
-        // 数字雨滴类
-        class Drop {
-            constructor(x) { this.x = x; this.reset(); this.y = Math.random() * -100; }
-            reset() { this.text = personalizedTexts[Math.floor(Math.random() * personalizedTexts.length)]; this.speed = Math.random() * 5 + 3; }
-            draw() {
-                ctx.fillStyle = `rgba(255, 77, 109, ${opacity})`;
-                for (let i = 0; i < this.text.length; i++) {
-                    ctx.fillText(this.text[i], this.x, this.y - i * 20);
-                }
-            }
-            update() {
-                if (isSwarming) { // 点击时的物理逻辑
-                    this.y -= this.speed * 2; this.x += (Math.random()-0.5)*10;
-                    if(this.y < -100) { this.reset(); this.y = h; this.x = Math.random()*w; }
-                } else { this.y += this.speed; if (this.y - this.text.length * 20 > h) { this.y = Math.random() * -100; this.reset(); } }
-            }
-        }
-
-        let drops = [], isSwarming = false, opacity = 1;
-
-        function initDrops() {
-            drops = [];
-            for (let i = 0; i < w / 120; i++) drops.push(new Drop(i * 120));
-        }
         initSize();
 
+        // 引力粒子类
+        class Particle {
+            constructor() {
+                this.x = Math.random() * w; this.y = Math.random() * h;
+                this.originX = Math.random() * w; this.originY = Math.random() * h;
+                this.vx = 0; this.vy = 0;
+                this.accX = 0; this.accY = 0;
+                this.friction = Math.random() * 0.05 + 0.94;
+                this.color = `rgba(255, ${Math.random()*100+155}, ${Math.random()*50+205}, ${Math.random()})`;
+                this.repulsionFactor = Math.random() * 50 + 20;
+            }
+            draw() {
+                ctx.fillStyle = this.color; ctx.beginPath();
+                ctx.arc(this.x, this.y, 1.2, 0, Math.PI * 2); ctx.fill();
+            }
+            update() {
+                // 万有引力核心物理逻辑
+                const dx = target.x - this.x, dy = target.y - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const force = (distance - 150) / 150;
+                this.accX = dx / distance * force * repulsion;
+                this.accY = dy / distance * force * repulsion;
+                this.vx += this.accX; this.vy += this.accY;
+                this.vx *= this.friction; this.vy *= this.friction;
+                this.x += this.vx; this.y += this.vy;
+            }
+        }
+
+        let repulsion = 1; // 默认吸引，点击时改为排斥
+
         function animate() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; ctx.fillRect(0, 0, w, h);
-            drops.forEach(d => { d.update(); d.draw(); });
+            ctx.fillStyle = 'rgba(1, 1, 3, 0.3)'; ctx.fillRect(0, 0, w, h);
+            particles.forEach(p => { p.update(); p.draw(); });
             requestAnimationFrame(animate);
         }
 
         document.getElementById('mainHeart').addEventListener('click', (e) => {
-            isSwarming = true; opacity = 0.5; // 点击崩散
-            setTimeout(() => { isSwarming = false; opacity = 1; }, 2000); // 2秒后恢复
+            repulsion = -8; // 瞬间变为强排斥，产生震散效果
+            setTimeout(() => repulsion = 1, 1000); // 1秒后吸回
         });
 
         animate();
