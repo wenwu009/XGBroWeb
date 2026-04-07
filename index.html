@@ -3,81 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>YW的专属星空花园</title>
+    <title>YW专属基地</title>
     <link href="https://fonts.googleapis.com/css2?family=Long+Cang&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
             padding: 0;
-            background: #0a0a0f;
+            background-color: #0a0a0f; /* 深邃纯净的背景 */
             overflow: hidden;
             font-family: 'Long Cang', cursive;
-            touch-action: none; /* 阻止移动端默认滑动干扰 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* 保证居中 */
+            touch-action: none;
         }
 
-        /* 画布必须在最底层铺满 */
-        #universe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        /* 绝对居中文字，绝对不会挤压下方的爱心 */
-        .text-layer {
-            position: absolute;
-            top: 15%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
+        /* 标题排版 */
+        .title-box {
             text-align: center;
+            margin-bottom: 60px; /* 和爱心保持完美距离 */
             z-index: 10;
-            pointer-events: none;
         }
 
         h1 {
             color: #ffeb3b;
-            font-size: clamp(1.8rem, 7vw, 2.5rem);
+            font-size: clamp(1.8rem, 8vw, 2.5rem);
             text-shadow: 0 0 15px rgba(255, 235, 59, 0.6);
-            margin: 0 0 10px 0;
             line-height: 1.5;
-        }
-
-        p {
-            color: #ff4d6d;
-            font-size: 1.2rem;
             margin: 0;
-            text-shadow: 0 0 8px rgba(255, 77, 109, 0.5);
+            padding: 0 20px;
         }
 
-        /* 绝对居中魔法：死死钉在屏幕正中间，谁也挤不动 */
-        .heart-wrapper {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%); 
-            width: 120px;
-            height: 120px;
-            z-index: 20;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        /* 核心大爱心 */
+        .big-heart-btn {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            z-index: 10;
             cursor: pointer;
+            /* 呼吸跳动动画 */
+            animation: heartbeat 1.5s ease-in-out infinite;
         }
 
-        .heart {
+        /* 纯 CSS 画的大爱心 */
+        .heart-shape {
             background-color: #ff3860;
             width: 60px;
             height: 60px;
-            position: relative;
+            position: absolute;
+            top: 20px;
+            left: 20px;
             transform: rotate(-45deg);
-            box-shadow: 0 0 30px rgba(255, 56, 96, 0.8);
-            animation: pulse 1.5s ease-in-out infinite;
+            box-shadow: 0 0 40px rgba(255, 56, 96, 0.8);
+            pointer-events: none; /* 让点击穿透到父元素 */
         }
 
-        .heart::before, .heart::after {
+        .heart-shape::before, .heart-shape::after {
             content: '';
             background-color: #ff3860;
             width: 60px;
@@ -85,175 +68,112 @@
             border-radius: 50%;
             position: absolute;
         }
-        .heart::before { top: -30px; left: 0; }
-        .heart::after { top: 0; left: 30px; }
+        .heart-shape::before { top: -30px; left: 0; }
+        .heart-shape::after { top: 0; left: 30px; }
 
-        @keyframes pulse {
-            0% { transform: scale(1) rotate(-45deg); }
-            15% { transform: scale(1.15) rotate(-45deg); }
-            30% { transform: scale(1) rotate(-45deg); }
-            45% { transform: scale(1.15) rotate(-45deg); }
-            100% { transform: scale(1) rotate(-45deg); }
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            15% { transform: scale(1.15); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.15); }
+            100% { transform: scale(1); }
         }
 
-        .footer {
+        /* 飞出来的小爱心动画 */
+        .little-heart {
             position: absolute;
-            bottom: 5%;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(255, 235, 59, 0.4);
-            font-size: 0.9rem;
-            z-index: 10;
-            pointer-events: none;
-            letter-spacing: 2px;
+            pointer-events: none; /* 不干扰点击 */
+            z-index: 5;
+            /* 使用 CSS 变量控制随机飞行的方向 */
+            animation: flyOut 1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+            text-shadow: 0 0 10px currentColor;
+        }
+
+        @keyframes flyOut {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1.5) rotate(var(--rot));
+            }
         }
     </style>
 </head>
 <body>
-    <canvas id="universe"></canvas>
-    
-    <div class="text-layer">
-        <h1>我亲爱的大傻鸟，<br>想我的时候记得点一下这个大大的爱心</h1>
-        <p>文武009 专属定制</p>
-    </div>
-    
-    <div class="heart-wrapper" id="heartBtn">
-        <div class="heart"></div>
-    </div>
 
-    <div class="footer">TOUCH THE HEART</div>
+    <div class="title-box">
+        <h1>我亲爱的大傻鸟，<br>想我的时候记得点一下这个大大的爱心</h1>
+    </div>
+    
+    <div class="big-heart-btn" id="heartBtn">
+        <div class="heart-shape"></div>
+    </div>
 
     <script>
-        const canvas = document.getElementById('universe');
-        const ctx = canvas.getContext('2d');
-        let w, h;
-        let petals = [];
-        
-        // 手机屏幕自适应初始化
-        function initCanvas() {
-            w = window.innerWidth;
-            h = window.innerHeight;
-            canvas.width = w;
-            canvas.height = h;
-            petals = [];
-            // 初始化满屏的樱花
-            for (let i = 0; i < 60; i++) {
-                petals.push(new Petal(true)); 
-            }
-        }
-
-        class Petal {
-            constructor(initial = false) {
-                this.reset();
-                if (initial) this.y = Math.random() * h; // 初始时铺满全屏
-            }
-            
-            reset() {
-                this.x = Math.random() * w;
-                this.y = -50;
-                this.size = Math.random() * 8 + 6;
-                this.speedY = Math.random() * 1.5 + 1; // 缓慢飘落
-                this.speedX = Math.random() * 1 - 0.5;
-                this.angle = Math.random() * 360;
-                this.spin = (Math.random() - 0.5) * 4;
-                
-                // 物理震散力
-                this.vx = 0;
-                this.vy = 0;
-            }
-            
-            draw() {
-                ctx.save();
-                ctx.translate(this.x, this.y);
-                ctx.rotate(this.angle * Math.PI / 180);
-                
-                // 樱花粉色
-                ctx.fillStyle = 'rgba(255, 182, 193, 0.85)';
-                ctx.shadowColor = 'rgba(255, 105, 180, 0.6)';
-                ctx.shadowBlur = 5;
-                
-                // 绘制真实的樱花瓣形状
-                ctx.beginPath();
-                ctx.moveTo(0, 0);
-                ctx.quadraticCurveTo(this.size, -this.size, this.size, 0);
-                ctx.quadraticCurveTo(this.size, this.size, 0, this.size*1.2);
-                ctx.quadraticCurveTo(-this.size, this.size, -this.size, 0);
-                ctx.quadraticCurveTo(-this.size, -this.size, 0, 0);
-                ctx.fill();
-                
-                ctx.restore();
-            }
-            
-            update(touchX, touchY, force) {
-                this.angle += this.spin;
-                
-                // 点击爱心时的震荡波逻辑
-                if (force > 0) {
-                    const dx = this.x - touchX;
-                    const dy = this.y - touchY;
-                    const dist = Math.sqrt(dx*dx + dy*dy);
-                    // 只有爱心附近的樱花会被震开
-                    if (dist < 220) {
-                        const push = (220 - dist) * force * 0.02;
-                        this.vx += (dx / dist) * push;
-                        this.vy += (dy / dist) * push;
-                    }
-                }
-                
-                // 飘落 + 物理外力
-                this.x += this.speedX + this.vx;
-                this.y += this.speedY + this.vy;
-                
-                // 阻尼衰减（慢慢停下物理力）
-                this.vx *= 0.92;
-                this.vy *= 0.92;
-                
-                // 飞出屏幕后重新回到顶部
-                if (this.y > h + 50 || this.x < -50 || this.x > w + 50) {
-                    this.reset();
-                }
-            }
-        }
-
-        let currentForce = 0;
-        let tX = w/2, tY = h/2;
-
-        function animate() {
-            // 背景清理并加深色拖尾（营造一点梦幻感）
-            ctx.fillStyle = 'rgba(10, 10, 15, 0.3)';
-            ctx.fillRect(0, 0, w, h);
-            
-            petals.forEach(p => {
-                p.update(tX, tY, currentForce);
-                p.draw();
-            });
-            
-            if (currentForce > 0) currentForce *= 0.9; // 震荡波瞬间衰减
-            
-            requestAnimationFrame(animate);
-        }
-
-        window.addEventListener('resize', initCanvas);
-        initCanvas();
-        animate();
-
-        // 手机端专属点击事件
         const btn = document.getElementById('heartBtn');
+
+        // 生成爆开的小爱心
+        function createPopHearts(x, y) {
+            // 每次点击弹出 12 个小爱心
+            for (let i = 0; i < 12; i++) {
+                const littleHeart = document.createElement('div');
+                littleHeart.innerHTML = '❤'; // 直接用爱心符号，最清晰且不卡顿
+                littleHeart.className = 'little-heart';
+                
+                // 设置起始位置在手指点击的地方
+                littleHeart.style.left = x + 'px';
+                littleHeart.style.top = y + 'px';
+
+                // 随机生成飞散的角度和距离
+                const angle = Math.random() * Math.PI * 2; // 360度随机
+                const velocity = 60 + Math.random() * 100; // 飞行的距离
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+                const rot = (Math.random() - 0.5) * 120; // 随机旋转角度
+
+                // 把随机值传给 CSS 动画
+                littleHeart.style.setProperty('--tx', `${tx}px`);
+                littleHeart.style.setProperty('--ty', `${ty}px`);
+                littleHeart.style.setProperty('--rot', `${rot}deg`);
+
+                // 随机爱心颜色和大小
+                const colors = ['#ff3860', '#ff7eb3', '#ff4d6d', '#ffeb3b'];
+                littleHeart.style.color = colors[Math.floor(Math.random() * colors.length)];
+                littleHeart.style.fontSize = (16 + Math.random() * 15) + 'px';
+
+                document.body.appendChild(littleHeart);
+
+                // 动画结束（1秒）后，把元素从页面删掉，防止手机卡顿
+                setTimeout(() => {
+                    littleHeart.remove();
+                }, 1000);
+            }
+        }
+
+        // 交互事件
         const trigger = (e) => {
             e.preventDefault(); 
-            const touch = e.touches ? e.touches[0] : e;
-            tX = touch.clientX;
-            tY = touch.clientY;
-            currentForce = 3; // 触发震散力量
+            // 获取点击/触摸的精确坐标
+            let touchX, touchY;
+            if (e.touches && e.touches.length > 0) {
+                touchX = e.touches[0].clientX;
+                touchY = e.touches[0].clientY;
+            } else {
+                touchX = e.clientX;
+                touchY = e.clientY;
+            }
             
-            // 爱心本身瞬间缩小的触控反馈
-            btn.style.transform = 'translate(-50%, -50%) scale(0.8)';
-            setTimeout(() => {
-                btn.style.transform = 'translate(-50%, -50%) scale(1)';
-            }, 150);
+            // 按钮本身瞬间缩小的反馈
+            btn.style.transform = 'scale(0.85)';
+            setTimeout(() => { btn.style.transform = 'scale(1)'; }, 150);
+
+            // 触发爆开特效
+            createPopHearts(touchX, touchY);
         };
 
-        // 绑定手机触摸和鼠标点击
+        // 同时绑定手机触屏和电脑鼠标点击
         btn.addEventListener('touchstart', trigger, {passive: false});
         btn.addEventListener('mousedown', trigger);
     </script>
