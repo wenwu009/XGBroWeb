@@ -3,22 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XG-Bro Legacy | 落樱之城</title>
-    <link href="https://fonts.googleapis.com/css2?family=Long+Cang&display=swap" rel="stylesheet">
+    <title>XG-Bro Legacy | 代码深空</title>
+    <link href="https://fonts.googleapis.com/css2?family=Long+Cang&family=Source+Code+Pro&display=swap" rel="stylesheet">
     <style>
         :root { --heart-color: #ff4d6d; --accent-color: #ffeb3b; }
-        body { background: #121215; margin: 0; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; font-family: 'Long Cang', cursive; cursor: crosshair; }
+        body { background: #000; margin: 0; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; font-family: 'Long Cang', cursive; cursor: crosshair; }
         #universe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
         .content { z-index: 10; text-align: center; pointer-events: none; user-select: none; animation: fadeIn 3s ease-in; }
         h1 { color: var(--accent-color); font-size: 3.2rem; text-shadow: 0 0 20px rgba(255, 235, 59, 0.4); line-height: 1.6; margin-bottom: 40px; }
         .heart-box { position: relative; width: 120px; height: 120px; z-index: 10; cursor: pointer; pointer-events: auto; }
-        .heart { background-color: var(--heart-color); width: 80px; height: 80px; position: absolute; transform: rotate(-45deg); box-shadow: 0 0 40px rgba(255, 77, 109, 0.6); animation: heartbeat 1.4s ease-in-out infinite; }
+        .heart { background-color: var(--heart-color); width: 80px; height: 80px; position: absolute; transform: rotate(-45deg); box-shadow: 0 0 50px rgba(244, 67, 54, 0.8); animation: heartbeat 1.4s ease-in-out infinite; }
         .heart::before, .heart::after { content: ''; background-color: var(--heart-color); width: 80px; height: 80px; border-radius: 50%; position: absolute; }
         .heart::before { top: -40px; left: 0; }
         .heart::after { top: 0; left: 40px; }
         @keyframes heartbeat { 0% { transform: scale(1) rotate(-45deg); } 14% { transform: scale(1.15) rotate(-45deg); } 28% { transform: scale(1) rotate(-45deg); } 42% { transform: scale(1.15) rotate(-45deg); } 70% { transform: scale(1) rotate(-45deg); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @media (max-width: 768px) { h1 { font-size: 2rem; } }
     </style>
 </head>
 <body>
@@ -32,80 +31,52 @@
         const canvas = document.getElementById('universe');
         const ctx = canvas.getContext('2d');
         let w, h;
-        let petals = [], fireflies = [];
+        // 专属情书内容
+        const personalizedTexts = ["I Love YW", "文武009", "2026-04-08", "赛博情书", "YW专属", "Gemma 4"];
 
         function initSize() {
             w = canvas.width = window.innerWidth;
             h = canvas.height = window.innerHeight;
-            fireflies = [];
-            // 初始化萤火虫
-            for(let i=0; i<30; i++) {
-                fireflies.push({
-                    x: Math.random() * w, y: Math.random() * h,
-                    size: Math.random() * 3 + 2, vx: (Math.random()-0.5)*2, vy: (Math.random()-0.5)*2,
-                    blink: Math.random() * 0.02 + 0.01, opacity: Math.random()
-                });
-            }
+            ctx.font = '20px Source Code Pro';
+            initDrops();
         }
         window.addEventListener('resize', initSize);
-        initSize();
 
-        // 樱花瓣类
-        class Petal {
-            constructor() { this.reset(); }
-            reset() {
-                this.x = Math.random() * w; this.y = -20;
-                this.size = Math.random() * 10 + 5;
-                this.gravity = Math.random() * 2 + 1;
-                this.wind = (Math.random() - 0.5) * 2;
-                this.rot = Math.random() * 360; this.rotS = (Math.random()-0.5)*5;
-                this.opacity = 1; this.isSwarming = false;
-            }
+        // 数字雨滴类
+        class Drop {
+            constructor(x) { this.x = x; this.reset(); this.y = Math.random() * -100; }
+            reset() { this.text = personalizedTexts[Math.floor(Math.random() * personalizedTexts.length)]; this.speed = Math.random() * 5 + 3; }
             draw() {
-                ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.rot * Math.PI / 180);
-                ctx.globalAlpha = this.opacity; ctx.fillStyle = `rgba(255, 183, 197, ${this.opacity})`; ctx.beginPath();
-                const d = this.size;
-                ctx.moveTo(0, d/2); ctx.bezierCurveTo(-d/2, -d/2, -d, d/3, 0, d); ctx.bezierCurveTo(d, d/3, d/2, -d/2, 0, d/2);
-                ctx.fill(); ctx.restore();
+                ctx.fillStyle = `rgba(255, 77, 109, ${opacity})`;
+                for (let i = 0; i < this.text.length; i++) {
+                    ctx.fillText(this.text[i], this.x, this.y - i * 20);
+                }
             }
             update() {
-                if(this.isSwarming) { // 点击时的引力逻辑
-                    const dx = w/2 - this.x, dy = h/2 - this.y;
-                    this.x += dx * 0.02; this.y += dy * 0.02;
-                    this.opacity -= 0.01;
-                    if(this.opacity <= 0) this.reset();
-                } else { // 正常飘落逻辑
-                    this.y += this.gravity; this.x += this.wind; this.rot += this.rotS;
-                    if (this.y > h || this.x > w || this.x < 0) this.reset();
-                }
+                if (isSwarming) { // 点击时的物理逻辑
+                    this.y -= this.speed * 2; this.x += (Math.random()-0.5)*10;
+                    if(this.y < -100) { this.reset(); this.y = h; this.x = Math.random()*w; }
+                } else { this.y += this.speed; if (this.y - this.text.length * 20 > h) { this.y = Math.random() * -100; this.reset(); } }
             }
         }
 
-        // 初始化花瓣
-        for (let i = 0; i < 40; i++) petals.push(new Petal());
+        let drops = [], isSwarming = false, opacity = 1;
+
+        function initDrops() {
+            drops = [];
+            for (let i = 0; i < w / 120; i++) drops.push(new Drop(i * 120));
+        }
+        initSize();
 
         function animate() {
-            // 背景渐变
-            const gradient = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, h);
-            gradient.addColorStop(0, '#1a1a20'); gradient.addColorStop(1, '#050505');
-            ctx.fillStyle = gradient; ctx.fillRect(0, 0, w, h);
-
-            // 画萤火虫
-            fireflies.forEach(f => {
-                f.opacity += f.blink; f.x += f.vx; f.y += f.vy;
-                if(f.opacity > 1 || f.opacity < 0) f.blink *= -1;
-                if(f.x < 0 || f.x > w) f.vx *= -1; if(f.y < 0 || f.y > h) f.vy *= -1;
-                ctx.fillStyle = `rgba(180, 255, 100, ${Math.max(0, f.opacity)})`; ctx.beginPath(); ctx.arc(f.x, f.y, f.size, 0, Math.PI * 2); ctx.fill();
-            });
-
-            // 画花瓣
-            petals.forEach(p => { p.update(); p.draw(); });
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; ctx.fillRect(0, 0, w, h);
+            drops.forEach(d => { d.update(); d.draw(); });
             requestAnimationFrame(animate);
         }
 
         document.getElementById('mainHeart').addEventListener('click', (e) => {
-            // 点击让花瓣围绕爱心旋转飘散
-            petals.forEach(p => { p.isSwarming = true; setTimeout(() => p.isSwarming = false, 2000); });
+            isSwarming = true; opacity = 0.5; // 点击崩散
+            setTimeout(() => { isSwarming = false; opacity = 1; }, 2000); // 2秒后恢复
         });
 
         animate();
