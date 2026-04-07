@@ -3,124 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>YW的专属星空</title>
+    <title>YW的3D梦幻花海</title>
     <link href="https://fonts.googleapis.com/css2?family=Long+Cang&display=swap" rel="stylesheet">
     <style>
         :root {
-            --heart-red: #ff4d6d;
-            --star-gold: #ffeb3b;
+            --text-gold: #ffeb3b;
+            --heart-red: #ff3860;
         }
 
-        /* 使用 svh 适配移动端动态高度 */
         body { 
-            background: #020205; 
-            margin: 0; 
-            padding: 0;
-            overflow: hidden; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-around; 
-            align-items: center; 
-            height: 100vh;
-            height: 100svh; 
-            font-family: 'Long Cang', cursive;
-            touch-action: none; /* 防止手机缩放干扰 */
+            background: radial-gradient(circle at center, #1a0a1a 0%, #050508 100%); 
+            margin: 0; padding: 0; overflow: hidden; 
+            display: flex; flex-direction: column; justify-content: space-between; 
+            align-items: center; height: 100svh; 
+            font-family: 'Long Cang', cursive; touch-action: none;
         }
 
-        #universe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
+        /* 3D 背景画布 */
+        #renderCanvas {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; z-index: 1;
         }
 
-        .text-content {
-            z-index: 10;
-            text-align: center;
-            width: 90%; /* 保证手机端不溢出 */
-            pointer-events: none;
+        /* 标题层级 */
+        .ui-layer {
+            z-index: 10; text-align: center; width: 85%;
+            pointer-events: none; margin-top: 15svh;
         }
 
-        /* 手机端动态字号 */
         h1 {
-            color: var(--star-gold);
-            font-size: clamp(1.5rem, 8vw, 2.5rem);
-            text-shadow: 0 0 15px rgba(255, 235, 59, 0.5);
-            line-height: 1.5;
-            margin: 0;
+            color: var(--text-gold);
+            font-size: clamp(1.8rem, 7vw, 2.8rem);
+            text-shadow: 0 0 15px rgba(255, 235, 59, 0.4);
+            line-height: 1.4; margin: 0;
+            filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
         }
 
-        .heart-container {
-            position: relative;
-            width: 120px;
-            height: 120px;
-            z-index: 10;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        /* 3D 脉冲爱心 */
+        .heart-wrapper {
+            position: relative; width: 140px; height: 140px;
+            z-index: 20; display: flex; justify-content: center; align-items: center;
+            margin-bottom: 20svh; cursor: pointer;
         }
 
-        /* 脉冲爱心 */
         .heart {
             background-color: var(--heart-red);
-            width: 60px;
-            height: 60px;
-            position: relative;
-            transform: rotate(-45deg);
-            box-shadow: 0 0 40px rgba(255, 77, 109, 0.8);
-            animation: pulse 1.5s ease-in-out infinite;
+            width: 70px; height: 70px;
+            position: relative; transform: rotate(-45deg);
+            box-shadow: 0 0 40px rgba(255, 56, 96, 0.6), inset 0 0 20px rgba(0,0,0,0.2);
+            animation: pulse 1.8s ease-in-out infinite;
         }
         .heart::before, .heart::after {
-            content: '';
-            background-color: var(--heart-red);
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            position: absolute;
+            content: ''; background-color: var(--heart-red);
+            width: 70px; height: 70px; border-radius: 50%; position: absolute;
         }
-        .heart::before { top: -30px; left: 0; }
-        .heart::after { top: 0; left: 30px; }
+        .heart::before { top: -35px; left: 0; }
+        .heart::after { top: 0; left: 35px; }
 
         @keyframes pulse {
             0% { transform: scale(1) rotate(-45deg); }
-            15% { transform: scale(1.15) rotate(-45deg); }
-            30% { transform: scale(1) rotate(-45deg); }
-            45% { transform: scale(1.15) rotate(-45deg); }
+            10% { transform: scale(1.18) rotate(-45deg); }
+            25% { transform: scale(1) rotate(-45deg); }
+            40% { transform: scale(1.12) rotate(-45deg); }
             100% { transform: scale(1) rotate(-45deg); }
         }
 
-        /* 底部版权小字，更像个正式页面 */
         .footer {
-            z-index: 10;
-            color: rgba(255, 235, 59, 0.4);
-            font-size: 0.9rem;
-            margin-bottom: 20px;
+            z-index: 10; color: rgba(255, 235, 59, 0.3);
+            font-size: 0.8rem; margin-bottom: 30px; letter-spacing: 2px;
         }
     </style>
 </head>
 <body>
-    <canvas id="universe"></canvas>
+    <canvas id="renderCanvas"></canvas>
     
-    <div class="text-content">
+    <div class="ui-layer">
         <h1>我亲爱的大傻鸟，<br>想我的时候记得点一下这个大大的爱心</h1>
     </div>
     
-    <div class="heart-container" id="heartTrigger">
+    <div class="heart-wrapper" id="heartBtn">
         <div class="heart"></div>
     </div>
 
-    <div class="footer">// From: 文武009</div>
+    <div class="footer">// DESIGNED BY WENWU009 //</div>
 
     <script>
-        const canvas = document.getElementById('universe');
+        const canvas = document.getElementById('renderCanvas');
         const ctx = canvas.getContext('2d');
         let w, h, dpr;
-        let particles = [];
+        let petals = [];
+        const petalCount = 70; // 维持流畅度的黄金数量
 
-        // 针对手机高分屏优化：逻辑像素 vs 物理像素
-        function initCanvas() {
+        function init() {
             dpr = window.devicePixelRatio || 1;
             w = window.innerWidth;
             h = window.innerHeight;
@@ -128,76 +102,140 @@
             canvas.height = h * dpr;
             ctx.scale(dpr, dpr);
             
-            particles = [];
-            for (let i = 0; i < 260; i++) {
-                particles.push({
-                    x: Math.random() * w,
-                    y: Math.random() * h,
-                    vx: 0, vy: 0,
-                    size: Math.random() * 1.5 + 0.5,
-                    color: `hsla(${Math.random() * 20 + 340}, 100%, 70%, ${Math.random() * 0.8 + 0.2})`
-                });
+            petals = [];
+            for (let i = 0; i < petalCount; i++) {
+                petals.push(new Petal());
             }
         }
 
-        window.addEventListener('resize', initCanvas);
-        initCanvas();
+        class Petal {
+            constructor() {
+                this.reset();
+                this.y = Math.random() * h; // 初始随机分布
+            }
 
-        let force = 0.15; // 默认吸引力
-        let centerX = w / 2;
-        let centerY = h / 2;
-
-        function animate() {
-            ctx.fillStyle = 'rgba(2, 2, 5, 0.2)';
-            ctx.fillRect(0, 0, w, h);
-
-            particles.forEach(p => {
-                const dx = centerX - p.x;
-                const dy = centerY - p.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
+            reset() {
+                this.x = Math.random() * w;
+                this.y = -50;
+                this.z = Math.random() * 200; // 3D 深度
+                this.size = (Math.random() * 15 + 10) * (1 - this.z / 400); 
+                this.speedY = Math.random() * 1.5 + 1;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.rotation = Math.random() * 360;
+                this.rotationSpeed = (Math.random() - 0.5) * 2;
+                this.opacity = Math.random() * 0.5 + 0.5;
+                this.swing = Math.random() * 2;
+                this.swingStep = 0.01 + Math.random() * 0.02;
                 
-                // 吸引力物理模型
-                const acc = (dist - 80) * force * 0.01;
-                p.vx += (dx / dist) * acc;
-                p.vy += (dy / dist) * acc;
+                // 物理惯性
+                this.vx = 0;
+                this.vy = 0;
+            }
 
-                p.vx *= 0.96; // 阻尼
-                p.vy *= 0.96;
-                p.x += p.vx;
-                p.y += p.vy;
+            draw() {
+                ctx.save();
+                const perspectiveScale = 1 - this.z / 500;
+                ctx.globalAlpha = this.opacity * perspectiveScale;
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation * Math.PI / 180);
+                
+                // 3D 旋转压缩感
+                const scaleX = Math.cos(this.rotation * 0.02);
+                ctx.scale(scaleX, 1);
 
-                ctx.fillStyle = p.color;
+                // 渐变色：模拟花瓣纹理和明暗
+                const grd = ctx.createRadialGradient(0, 0, 0, 0, 0, this.size);
+                grd.addColorStop(0, '#ffc0cb');
+                grd.addColorStop(1, '#ff69b4');
+                
+                ctx.fillStyle = grd;
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                // 真实花瓣形状
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(-this.size/2, -this.size/2, -this.size, this.size/3, 0, this.size);
+                ctx.bezierCurveTo(this.size, this.size/3, this.size/2, -this.size/2, 0, 0);
                 ctx.fill();
-            });
+                
+                // 边缘高光
+                ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
 
-            requestAnimationFrame(animate);
+                ctx.restore();
+            }
+
+            update(forceX, forceY, strength) {
+                // 基础下落逻辑
+                this.rotation += this.rotationSpeed;
+                this.swing += this.swingStep;
+                
+                // 物理力场反馈
+                if (strength > 0) {
+                    const dx = this.x - forceX;
+                    const dy = this.y - forceY;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < 250) {
+                        const push = (250 - dist) * strength * 0.05;
+                        this.vx += (dx / dist) * push;
+                        this.vy += (dy / dist) * push;
+                    }
+                }
+
+                this.x += this.speedX + Math.sin(this.swing) * 0.5 + this.vx;
+                this.y += this.speedY + this.vy;
+                
+                // 摩擦力衰减
+                this.vx *= 0.95;
+                this.vy *= 0.95;
+
+                if (this.y > h + 50) this.reset();
+            }
         }
 
-        const trigger = document.getElementById('heartTrigger');
+        let pushStrength = 0;
+        let touchX = 0, touchY = 0;
 
-        // 手机触控优化
-        const handleInteraction = (e) => {
-            const touch = e.touches ? e.touches[0] : e;
-            centerX = touch.clientX;
-            centerY = touch.clientY;
+        function render() {
+            ctx.clearRect(0, 0, w, h);
             
-            force = -2.5; // 瞬间变成强排斥力（震散效果）
-            setTimeout(() => {
-                force = 0.15; // 恢复吸引
-                centerX = w / 2;
-                centerY = h / 2;
-            }, 800);
+            // 绘制远景微光（背景氛围）
+            const bgGrd = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, h);
+            bgGrd.addColorStop(0, 'rgba(40, 20, 40, 0.3)');
+            bgGrd.addColorStop(1, 'transparent');
+            ctx.fillStyle = bgGrd;
+            ctx.fillRect(0, 0, w, h);
+
+            petals.forEach(p => {
+                p.update(touchX, touchY, pushStrength);
+                p.draw();
+            });
+
+            if (pushStrength > 0) pushStrength *= 0.9; // 力场衰减
+
+            requestAnimationFrame(render);
+        }
+
+        const btn = document.getElementById('heartBtn');
+        const triggerAction = (e) => {
+            const pos = e.touches ? e.touches[0] : e;
+            touchX = pos.clientX;
+            touchY = pos.clientY;
+            pushStrength = 1.2; // 爆发力
+            
+            // 增加瞬间心跳缩放反馈
+            btn.style.transform = 'scale(0.8)';
+            setTimeout(() => btn.style.transform = 'scale(1)', 150);
         };
 
-        trigger.addEventListener('touchstart', (e) => {
+        btn.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            handleInteraction(e);
+            triggerAction(e);
         });
-        trigger.addEventListener('mousedown', handleInteraction);
+        btn.addEventListener('mousedown', triggerAction);
 
-        animate();
+        window.addEventListener('resize', init);
+        init();
+        render();
     </script>
 </body>
 </html>
