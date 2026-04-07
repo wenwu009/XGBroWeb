@@ -77,6 +77,7 @@
             transform: rotate(-45deg);
             box-shadow: 0 0 40px rgba(255, 56, 96, 0.8), inset 0 0 20px rgba(0,0,0,0.2);
             animation: heartbeat 1.5s ease-in-out infinite;
+            position: relative; /* 为裂纹定位 */
         }
         .heart::before, .heart::after {
             content: '';
@@ -102,6 +103,20 @@
             transform: scale(0.85);
         }
 
+        /* 裂纹样式 */
+        .crack {
+            position: absolute;
+            background-color: #000; /* 裂纹颜色，黑色或深色 */
+            transition: opacity 0.2s, transform 0.2s;
+            opacity: 0; /* 默认不可见 */
+        }
+        /* 设计4个裂纹线条，从中心向外延伸 */
+        .crack1 { width: 100%; height: 2px; top: 50%; left: 0; transform: translateY(-50%) skewX(45deg); }
+        .crack2 { width: 2px; height: 100%; top: 0; left: 50%; transform: translateX(-50%) skewY(45deg); }
+        .crack3 { width: 80%; height: 1px; top: 60%; left: 10%; transform: rotate(10deg); }
+        .crack4 { width: 70%; height: 1px; top: 40%; left: 20%; transform: rotate(-10deg); }
+
+
         /* 5. 底部版权与提示 */
         .footer {
             z-index: 10;
@@ -117,10 +132,15 @@
     <div class="text-content">
         <h1>我亲爱的大傻鸟，<br>想我的时候记得点一下这个大大的爱心</h1>
         <p class="signature">文武009 专属定制</p>
-    </div>
+    }
     
     <div class="heart-container" id="mainHeart">
-        <div class="heart"></div>
+        <div class="heart">
+            <div class="crack crack1"></div>
+            <div class="crack crack2"></div>
+            <div class="crack crack3"></div>
+            <div class="crack crack4"></div>
+        </div>
     </div>
 
     <div class="footer">TOUCH THE HEART</div>
@@ -203,8 +223,40 @@
             }
         }
 
-        const petals = [], popHearts = [];
-        for (let i = 0; i < 60; i++) petals.push(new Petal());
+        // 浮动文本类
+        const TEXT_MESSAGES = ["不要再点啦", "不要点啦", "再点要碎啦"];
+        class FloatingText {
+            constructor() {
+                this.x = Math.random() * (w - 200) + 100; // 避免太靠边
+                this.y = Math.random() * (h - 100) + 50;  // 避免太靠顶/底
+                this.text = TEXT_MESSAGES[Math.floor(Math.random() * TEXT_MESSAGES.length)];
+                this.life = 1; // 生命 1.0 -> 0.0
+                this.speed = Math.random() * 0.5 + 0.5; // 向上浮动速度
+                this.vx = (Math.random() - 0.5) * 1;    // 左右摆动
+                // 获取 CSS 变量值
+                this.color = getComputedStyle(document.documentElement).getPropertyValue('--subtext-pink').trim();
+                this.size = Math.random() * 15 + 20; // 字体大小 20-35px
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.life;
+                ctx.translate(this.x, this.y);
+                ctx.fillStyle = this.color;
+                ctx.font = `${this.size}px 'Long Cang', cursive`;
+                ctx.textAlign = 'center';
+                ctx.fillText(this.text, 0, 0);
+                ctx.restore();
+            }
+            update() {
+                this.y -= this.speed; // 向上浮动
+                this.x += this.vx;
+                this.life -= 0.01; // 淡出
+            }
+        }
+
+
+        const petalsData = [], popHeartsData = [], floatingTextsData = [];
+        for (let i = 0; i < 60; i++) petalsData.push(new Petal());
 
         function animate() {
             // 背景清理并加色拖尾（营造一点梦幻感）
@@ -216,16 +268,99 @@
                 ctx.fillStyle = `rgba(255, 235, 59, ${Math.max(0, s.opacity)})`; ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2); ctx.fill();
             });
             // 画樱花
-            petals.forEach(p => { p.update(); p.draw(); });
+            petalsData.forEach(p => { p.update(); p.draw(); });
             // 画爆炸爱心
-            popHearts.forEach((p, i) => { p.update(); p.draw(); if(p.life <= 0) popHearts.splice(i, 1); });
+            popHeartsData.forEach((p, i) => { p.update(); p.draw(); if(p.life <= 0) popHeartsData.splice(i, 1); });
+            // 画浮动文字
+            floatingTextsData.forEach((ft, i) => { ft.update(); ft.draw(); if (ft.life <= 0) floatingTextsData.splice(i, 1); });
+
             requestAnimationFrame(animate);
         }
 
-        document.getElementById('mainHeart').addEventListener('click', (e) => {
-            // 点击震散出一堆小粒子爱心
-            for(let i=0; i<30; i++) popHearts.push(new PopHeart(e.clientX, e.clientY));
-        });
+        const mainHeart = document.getElementById('mainHeart');
+        const cracks = document.querySelectorAll('.crack');
+
+        // 全局状态变量
+        let isHolding = false;
+        let crackLevel = 0; // 0.0 -> 1.0 (最大裂纹)
+        const MAX_CRACK = 1.0;
+        const CRACK_INCREMENT = 0.03; // 每次增加
+        const HEAL_INCREMENT = 0.01;  // 每次愈合
+        let crackIntervalId = null;
+        let healIntervalId = null;
+
+        // 更新裂纹 DOM 样式的函数
+        function updateCrackStyle() {
+            cracks.forEach(c => {
+                if (crackLevel > 0.05) { // 有一点裂纹后才显示
+                    c.style.opacity = crackLevel; // opacity 与裂纹程度正相关
+                } else {
+                    c.style.opacity = 0;
+                }
+            });
+        }
+
+        // 裂纹增加逻辑
+        function startCracking() {
+            if (crackLevel < MAX_CRACK) {
+                crackLevel += CRACK_INCREMENT;
+                updateCrackStyle();
+            } else {
+                // 达到最大裂纹，停止增加
+                if (crackIntervalId) clearInterval(crackIntervalId);
+            }
+        }
+
+        // 愈合逻辑
+        function startHealing() {
+            if (crackLevel > 0) {
+                crackLevel -= HEAL_INCREMENT;
+                if (crackLevel < 0) crackLevel = 0;
+                updateCrackStyle();
+            } else {
+                // 愈合完成
+                if (healIntervalId) clearInterval(healIntervalId);
+            }
+        }
+
+
+        // 处理点击/长按逻辑
+        function handlePointerDown(e) {
+            isHolding = true;
+
+            // 1. 原有爆炸效果逻辑 (点击瞬间触发)
+            let x = e.clientX || (e.touches && e.touches[0].clientX);
+            let y = e.clientY || (e.touches && e.touches[0].clientY);
+            if (x && y) {
+                for(let i=0; i<15; i++) popHeartsData.push(new PopHeart(x, y));
+            }
+
+            // 2. 裂纹增加逻辑
+            if (healIntervalId) clearInterval(healIntervalId); // 停止愈合
+            if (crackIntervalId) clearInterval(crackIntervalId); // 防止重复启动
+            crackIntervalId = setInterval(startCracking, 100); // 每 100ms 增加一次裂纹
+
+            // 3. 浮动文本逻辑
+            // 点击或长按都生成一条文本
+            floatingTextsData.push(new FloatingText());
+        }
+
+        function handlePointerUp() {
+            if (isHolding) {
+                isHolding = false;
+                // 1. 停止裂纹增加
+                if (crackIntervalId) clearInterval(crackIntervalId);
+                // 2. 启动愈合逻辑
+                if (healIntervalId) clearInterval(healIntervalId); // 防止重复启动
+                healIntervalId = setInterval(startHealing, 100); // 每 100ms 愈合一次
+            }
+        }
+
+        // 添加事件监听器 (同时支持鼠标和触摸)
+        mainHeart.addEventListener('mousedown', handlePointerDown);
+        window.addEventListener('mouseup', handlePointerUp); // 在窗口松开也有效
+        mainHeart.addEventListener('touchstart', (e) => { e.preventDefault(); handlePointerDown(e); }); // 防止默认触摸行为
+        window.addEventListener('touchend', handlePointerUp);
 
         animate();
     </script>
