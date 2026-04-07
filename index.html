@@ -3,147 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>X哥的私人据点 | 傻鸟专属</title>
+    <title>YW傻鸟专属基地</title>
+    <link href="https://fonts.googleapis.com/css2?family=Long+Cang&display=swap" rel="stylesheet">
     <style>
-        /* 全局背景设为深色宇宙风格，文字金黄，字体使用 Long Cang */
+        /* 1. 宇宙深空背景 */
         body { 
-            background: radial-gradient(circle at center, #2e1a47, #121212); 
-            color: #ffeb3b; 
-            font-family: 'Long Cang', cursive, serif; 
+            background: #050505; 
+            margin: 0; 
+            overflow: hidden; 
             display: flex; 
             flex-direction: column; 
             justify-content: center; 
             align-items: center; 
-            height: 100vh; 
-            margin: 0; 
-            overflow: hidden; 
+            height: 100vh;
+            font-family: 'Long Cang', cursive;
+        }
+
+        /* 2. 背景画布层 */
+        #universe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* 3. 标题：带呼吸灯特效 */
+        h1 {
+            color: #ffeb3b;
+            font-size: 3.5rem;
+            text-align: center;
+            z-index: 10;
+            text-shadow: 0 0 20px rgba(255, 235, 59, 0.8);
+            user-select: none;
+            pointer-events: none;
+            line-height: 1.5;
+        }
+
+        /* 4. 核心爱心：脉冲心跳动画 */
+        .heart-box {
             position: relative;
+            width: 150px;
+            height: 150px;
+            z-index: 10;
+            cursor: pointer;
+            animation: heartbeat 1.5s ease-in-out infinite;
         }
 
-        /* 标题样式：大号字体，金色发光，居中显示 */
-        h1 { 
-            font-size: 3.5em; 
-            text-align: center; 
-            line-height: 1.4; 
-            text-shadow: 0 0 10px #ffeb3b, 0 0 20px #ff9800; 
-            margin-bottom: 50px; 
-            position: relative;
-            z-index: 10; /* 确保标题在流星上方 */
+        .heart {
+            background-color: #f44336;
+            width: 100px;
+            height: 100px;
+            position: absolute;
+            transform: rotate(-45deg);
+            box-shadow: 0 0 40px #f44336;
         }
-
-        /* 爱心容器：可以点击，悬停时放大 */
-        .heart-container { 
-            position: relative; 
-            width: 200px; 
-            height: 200px; 
-            cursor: pointer; 
-            transition: transform 0.2s; 
-            z-index: 10; /* 确保爱心在流星上方 */
-        }
-        .heart-container:hover { 
-            transform: scale(1.1); 
-        }
-
-        /* 基础爱心形状：红色霓虹发光 */
-        .heart { 
-            background-color: #f44336; 
-            width: 100px; 
-            height: 100px; 
-            position: absolute; 
-            top: 50px; 
-            left: 50px; 
-            transform: rotate(-45deg); 
-            box-shadow: 0 0 20px #f44336, 0 0 40px #f44336;
-        }
-        /* 爱心上半部分的两个圆弧 */
-        .heart::before, .heart::after { 
-            content: ''; 
-            background-color: #f44336; 
-            width: 100px; 
-            height: 100px; 
-            border-radius: 50%; 
-            position: absolute; 
+        .heart::before, .heart::after {
+            content: '';
+            background-color: #f44336;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            position: absolute;
         }
         .heart::before { top: -50px; left: 0; }
         .heart::after { top: 0; left: 50px; }
 
-        /* 流星的动画定义 */
-        @keyframes meteorTrail {
-            0% { 
-                transform: translate(0, 0) rotate(-45deg); 
-                opacity: 1; 
-            }
-            100% { 
-                transform: translate(calc(100vw + 200px), calc(100vh + 200px)) rotate(-45deg); 
-                opacity: 0; 
-            }
-        }
-
-        /* 定义不同颜色的流星 */
-        @keyframes meteorColor_red {
-            0%, 100% { background: linear-gradient(to right, rgba(255, 0, 0, 0) 0%, #ff4b4b 50%, rgba(255, 0, 0, 0) 100%); box-shadow: 0 0 10px #ff4b4b; }
-        }
-        @keyframes meteorColor_gold {
-            0%, 100% { background: linear-gradient(to right, rgba(255, 215, 0, 0) 0%, #ffd700 50%, rgba(255, 215, 0, 0) 100%); box-shadow: 0 0 10px #ffd700; }
-        }
-        @keyframes meteorColor_purple {
-            0%, 100% { background: linear-gradient(to right, rgba(128, 0, 128, 0) 0%, #da70d6 50%, rgba(128, 0, 128, 0) 100%); box-shadow: 0 0 10px #da70d6; }
-        }
-
-        /* 流星的基础样式：细长的轨迹 */
-        .meteor {
-            position: absolute;
-            width: 2px;
-            height: 150px;
-            opacity: 0;
-            pointer-events: none; /* 确保不挡住点击事件 */
-            z-index: 1; /* 流星在最底层 */
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.1); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.1); }
+            70% { transform: scale(1); }
         }
     </style>
 </head>
 <body>
+    <canvas id="universe"></canvas>
+    
     <h1>我亲爱的大傻鸟，<br>想我的时候记得点一下这个大大的爱心</h1>
-    <div class="heart-container">
+    
+    <div class="heart-box" id="mainHeart">
         <div class="heart"></div>
     </div>
 
     <script>
-        // 定义一个函数，在页面上随机位置生成不同颜色的流星
-        function createMeteor() {
-            const meteor = document.createElement('div');
-            meteor.classList.add('meteor');
-            
-            // 随机选择流星的颜色动画
-            const colorAnimations = ['meteorColor_red', 'meteorColor_gold', 'meteorColor_purple'];
-            const randomColor = colorAnimations[Math.floor(Math.random() * colorAnimations.length)];
-            
-            // 随机设置流星的起始横向位置和动画时长
-            meteor.style.left = Math.random() * 100 + 'vw';
-            meteor.style.top = '-150px'; // 确保在屏幕上方开始
-            meteor.style.animation = `meteorTrail ${Math.random() * 2 + 1}s linear forwards, ${randomColor} 1s linear infinite`;
-            
-            // 将流星添加到页面中
-            document.body.appendChild(meteor);
-            
-            // 动画完成后自动删除流星元素，释放内存
-            setTimeout(() => {
-                meteor.remove();
-            }, 3000); // 3秒后删除
-        }
+        const canvas = document.getElementById('universe');
+        const ctx = canvas.getContext('2d');
+        let w, h;
 
-        // 定义一个函数，批量生成流星雨效果
-        function createMeteorShower() {
-            // 在短时间内连续生成多个流星
-            for (let i = 0; i < 30; i++) {
-                setTimeout(createMeteor, i * 100); // 每个流星间隔100毫秒
+        // 设置画布大小
+        function initSize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', initSize);
+        initSize();
+
+        // --- 流星类 ---
+        class Meteor {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * w * 1.5;
+                this.y = -Math.random() * h;
+                this.len = Math.random() * 80 + 50;
+                this.speed = Math.random() * 10 + 5;
+                this.color = `hsl(${Math.random() * 60 + 330}, 100%, 70%)`; // 偏红/粉
+            }
+            draw() {
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                ctx.lineTo(this.x - this.len, this.y + this.len);
+                ctx.stroke();
+            }
+            update() {
+                this.x -= this.speed;
+                this.y += this.speed;
+                if (this.y > h + this.len || this.x < -this.len) {
+                    this.reset();
+                }
             }
         }
 
-        // 页面加载完成后，自动开始流星雨效果
-        window.addEventListener('load', createMeteorShower);
+        // --- 点击粒子类 ---
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 4 + 2;
+                this.speedX = Math.random() * 6 - 3;
+                this.speedY = Math.random() * 6 - 3;
+                this.life = 1;
+                this.color = `hsl(${Math.random() * 30 + 350}, 100%, 50%)`;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.life -= 0.02;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.life;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
 
-        // 如果用户点击爱心，会再次触发流星雨效果
-        document.querySelector('.heart-container').addEventListener('click', createMeteorShower);
+        const meteors = Array.from({ length: 30 }, () => new Meteor());
+        const particles = [];
+
+        function animate() {
+            ctx.fillStyle = 'rgba(5, 5, 5, 0.2)'; // 拖尾效果
+            ctx.fillRect(0, 0, w, h);
+
+            meteors.forEach(m => {
+                m.update();
+                m.draw();
+            });
+
+            particles.forEach((p, index) => {
+                p.update();
+                p.draw();
+                if (p.life <= 0) particles.splice(index, 1);
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        // 点击产生粒子效果
+        document.getElementById('mainHeart').addEventListener('mousedown', (e) => {
+            for (let i = 0; i < 40; i++) {
+                particles.push(new Particle(e.clientX, e.clientY));
+            }
+        });
+
+        animate();
     </script>
 </body>
 </html>
