@@ -3,117 +3,279 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XG-BRO | 赛博智能核心</title>
+    <title>XG-BRO | Cyber Command Center</title>
     <style>
-        /* 整体赛博黑客风格设置 */
+        :root {
+            --neon-green: #00ff41;
+            --dark-bg: #050505;
+            --sidebar-width: 250px;
+        }
+
+        * { box-sizing: border-box; cursor: crosshair; }
+
         body {
-            background-color: #0a0a0a; /* 极客黑 */
-            color: #00ff41; /* 经典矩阵绿 */
+            background-color: var(--dark-bg);
+            color: var(--neon-green);
             font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
             overflow: hidden;
         }
 
-        #terminal {
-            width: 80%;
-            max-width: 800px;
-            height: 60vh;
-            border: 2px solid #00ff41;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.9);
-            box-shadow: 0 0 15px #00ff41;
-            overflow-y: auto;
-            margin-bottom: 20px;
+        /* 矩阵背景画布 */
+        #matrix {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.15;
         }
 
-        .line { margin-bottom: 10px; line-height: 1.4; }
-        .user-prompt { color: #008f11; font-weight: bold; }
-        .bot-response { color: #00ff41; text-shadow: 0 0 5px #00ff41; }
-
-        .input-area {
+        /* 顶部导航栏 */
+        header {
+            height: 60px;
+            border-bottom: 2px solid var(--neon-green);
             display: flex;
-            width: 80%;
-            max-width: 800px;
-            gap: 10px;
+            align-items: center;
+            padding: 0 20px;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: space-between;
+            box-shadow: 0 0 15px var(--neon-green);
         }
 
+        .logo { font-size: 24px; font-weight: bold; text-shadow: 0 0 10px var(--neon-green); }
+
+        /* 主体布局 */
+        main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* 左边栏：系统状态 */
+        .sidebar-left {
+            width: var(--sidebar-width);
+            border-right: 1px solid var(--neon-green);
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            font-size: 12px;
+        }
+
+        /* 右边栏：广告与服务 */
+        .sidebar-right {
+            width: var(--sidebar-width);
+            border-left: 1px solid var(--neon-green);
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        /* 中间核心：终端 */
+        .content-center {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            gap: 15px;
+        }
+
+        #terminal {
+            flex: 1;
+            background: rgba(0, 20, 0, 0.4);
+            border: 1px solid var(--neon-green);
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: inset 0 0 10px #00ff4133;
+        }
+
+        .input-area { display: flex; gap: 10px; }
         input {
-            flex-grow: 1;
-            background: black;
-            border: 1px solid #00ff41;
-            color: #00ff41;
-            padding: 10px;
-            outline: none;
+            flex: 1;
+            background: transparent;
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            padding: 12px;
             font-family: inherit;
+            outline: none;
         }
 
         button {
-            background: #00ff41;
+            background: var(--neon-green);
             color: black;
             border: none;
-            padding: 10px 20px;
-            cursor: pointer;
+            padding: 0 25px;
             font-weight: bold;
             transition: 0.3s;
         }
 
-        button:hover {
-            background: #008f11;
-            color: #fff;
+        button:hover { background: #fff; box-shadow: 0 0 20px var(--neon-green); }
+
+        /* 广告位样式 */
+        .ad-box {
+            border: 1px dashed var(--neon-green);
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            text-align: center;
+            animation: blink 2s infinite;
         }
 
-        /* 简单的滚动条美化 */
-        #terminal::-webkit-scrollbar { width: 5px; }
-        #terminal::-webkit-scrollbar-thumb { background: #008f11; }
+        .nav-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid var(--neon-green);
+            background: transparent;
+            color: var(--neon-green);
+            text-align: left;
+            text-decoration: none;
+        }
+
+        .nav-btn:hover { background: rgba(0, 255, 65, 0.2); }
+
+        /* 底部快报 */
+        footer {
+            height: 30px;
+            border-top: 1px solid var(--neon-green);
+            background: black;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .ticker {
+            white-space: nowrap;
+            animation: ticker 20s linear infinite;
+        }
+
+        @keyframes ticker {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        @keyframes blink {
+            50% { opacity: 0.5; }
+        }
+
+        .line { margin-bottom: 8px; font-size: 14px; }
+        .user { color: #fff; }
+        .stat-val { color: #fff; float: right; }
     </style>
 </head>
 <body>
 
-    <h1 style="text-shadow: 0 0 10px #00ff41;">[ XG-BRO CYBERNETIC CORE ]</h1>
-    
-    <div id="terminal">
-        <div class="line bot-response">>> 系统就绪... 正在连接 无限制模型...</div>
-        <div class="line bot-response">>> 当前节点: 全球</div>
-        <div class="line bot-response">>> 状态: 12092个语料文件正在加载中...</div>
+<canvas id="matrix"></canvas>
+
+<header>
+    <div class="logo">XG-BRO // CORE_V4</div>
+    <div style="font-size: 12px;">LOCATION: MYAWADDY_NODE_01</div>
+</header>
+
+<main>
+    <div class="sidebar-left">
+        <h3 style="border-bottom: 1px solid; padding-bottom: 5px;">[ 系统监控 ]</h3>
+        <div class="line">CORE_TEMP: <span class="stat-val">42°C</span></div>
+        <div class="line">RTX_5070: <span class="stat-val">98% LOAD</span></div>
+        <div class="line">VRAM: <span class="stat-val">11.2GB/12GB</span></div>
+        <div class="line">TRAIN_DATA: <span class="stat-val">12,092 FILES</span></div>
+        <div class="line">STATUS: <span class="stat-val" style="color: yellow;">炼丹中...</span></div>
+        <br>
+        <h3 style="border-bottom: 1px solid; padding-bottom: 5px;">[ 快速导航 ]</h3>
+        <a href="#" class="nav-btn">/ 渗透测试库</a>
+        <a href="#" class="nav-btn">/ C++ 逆向教程</a>
+        <a href="#" class="nav-btn">/ 驱动开发专区</a>
     </div>
 
-    <div class="input-area">
-        <input type="text" id="userInput" placeholder="输入你的渗透/逆向指令..." onkeydown="if(event.keyCode==13) sendMessage()">
-        <button onclick="sendMessage()">发送</button>
+    <div class="content-center">
+        <div id="terminal">
+            <div class="line">>> 初始化 XG-BRO 赛博核心...</div>
+            <div class="line">>> 正在建立 Cloudflare 隧道... [OK]</div>
+            <div class="line">>> 正在同步 5070 算力节点... [OK]</div>
+            <div class="line">>> 系统免责声明：本站仅供技术交流，严禁非法用途！</div>
+        </div>
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Waiting for instructions..." onkeydown="if(event.keyCode==13) sendMessage()">
+            <button onclick="sendMessage()">EXECUTE</button>
+        </div>
     </div>
 
-    <script>
-        const terminal = document.getElementById('terminal');
-        const userInput = document.getElementById('userInput');
+    <div class="sidebar-right">
+        <h3 style="border-bottom: 1px solid; padding-bottom: 5px;">[ 赞助广告 ]</h3>
+        <div class="ad-box">
+            🔥 顶级 5090 算力租用 🔥<br>
+            24H 不间断炼丹服务<br>
+            联系 TG: @XGBRO_SERVICE
+        </div>
+        <div class="ad-box">
+            💎 VIP 内部插件库 💎<br>
+            包含最新驱动级 Hook 源码<br>
+            [ 限时开放 ]
+        </div>
+        <h3 style="border-bottom: 1px solid; padding-bottom: 5px;">[ 关于作者 ]</h3>
+        <p style="font-size: 12px;">X哥：专注于 C++ 底层逆向与 AI 自动化渗透。不睡觉的赛博狂人。</p>
+    </div>
+</main>
 
-        function appendMessage(text, isUser = false) {
-            const line = document.createElement('div');
-            line.className = 'line ' + (isUser ? 'user-prompt' : 'bot-response');
-            line.innerText = (isUser ? 'X哥 > ' : 'SYSTEM >> ') + text;
-            terminal.appendChild(line);
-            terminal.scrollTop = terminal.scrollHeight;
+<footer>
+    <div class="ticker">
+        [告警] 检测到全球 0-Day 漏洞更新... [提醒] 5070 炼丹进度已达 1%... [公告] xgbro.com 正式进入 AI 智能化阶段... [免责] 技术无罪，请守法使用...
+    </div>
+</footer>
+
+<script>
+    // 矩阵背景逻辑
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*";
+    const fontSize = 16;
+    const columns = canvas.width / fontSize;
+    const drops = Array(Math.floor(columns)).fill(1);
+
+    function drawMatrix() {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#0f0";
+        ctx.font = fontSize + "px arial";
+        for (let i = 0; i < drops.length; i++) {
+            const text = letters[Math.floor(Math.random() * letters.length)];
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+            drops[i]++;
         }
+    }
+    setInterval(drawMatrix, 33);
 
-        function sendMessage() {
-            const text = userInput.value.trim();
-            if (!text) return;
+    // 终端逻辑
+    const terminal = document.getElementById('terminal');
+    const userInput = document.getElementById('userInput');
 
-            appendMessage(text, true);
-            userInput.value = '';
+    function appendMessage(text, type = 'bot') {
+        const line = document.createElement('div');
+        line.className = 'line';
+        line.innerHTML = type === 'user' ? `<span class="user">X哥 > </span>${text}` : `<span>SYSTEM >> </span>${text}`;
+        terminal.appendChild(line);
+        terminal.scrollTop = terminal.scrollHeight;
+    }
 
-            // 这是一个占位逻辑，明天等你的 API 调通了，就接在这里
+    function sendMessage() {
+        const text = userInput.value.trim();
+        if (!text) return;
+        appendMessage(text, 'user');
+        userInput.value = '';
+        
+        setTimeout(() => {
+            appendMessage("正在通过 5070 核心检索语料库...");
             setTimeout(() => {
-                appendMessage("正在呼叫 XG-Gemma-4 核心进行深度解析...");
-                setTimeout(() => {
-                    appendMessage("错误: 大脑核心正在闭关修炼（当前进度 1%），请明天早上 9:00 再试。");
-                }, 1000);
-            }, 500);
-        }
-    </script>
+                appendMessage("结果：大脑当前处于“闭关”训练状态（进度1%）。请先研究左侧导航栏的教程，或咨询右侧广告位服务。");
+            }, 800);
+        }, 300);
+    }
+</script>
+
 </body>
 </html>
