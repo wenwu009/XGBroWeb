@@ -9,6 +9,7 @@
             --neon-green: #00ff41;
             --dark-bg: #050505;
             --sidebar-width: 250px;
+            --gold: #ffd700;
         }
 
         * { box-sizing: border-box; cursor: crosshair; }
@@ -24,16 +25,9 @@
             overflow: hidden;
         }
 
-        /* 矩阵背景画布 */
-        #matrix {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: -1;
-            opacity: 0.15;
-        }
+        /* 矩阵背景 */
+        #matrix { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.15; }
 
-        /* 顶部导航栏 */
         header {
             height: 60px;
             border-bottom: 2px solid var(--neon-green);
@@ -47,14 +41,9 @@
 
         .logo { font-size: 24px; font-weight: bold; text-shadow: 0 0 10px var(--neon-green); }
 
-        /* 主体布局 */
-        main {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
+        main { display: flex; flex: 1; overflow: hidden; }
 
-        /* 左边栏：系统状态 */
+        /* 左栏 */
         .sidebar-left {
             width: var(--sidebar-width);
             border-right: 1px solid var(--neon-green);
@@ -63,7 +52,7 @@
             font-size: 12px;
         }
 
-        /* 右边栏：广告与服务 */
+        /* 右栏 */
         .sidebar-right {
             width: var(--sidebar-width);
             border-left: 1px solid var(--neon-green);
@@ -71,7 +60,7 @@
             background: rgba(0, 0, 0, 0.6);
         }
 
-        /* 中间核心：终端 */
+        /* 中间 */
         .content-center {
             flex: 1;
             display: flex;
@@ -96,7 +85,6 @@
             border: 1px solid var(--neon-green);
             color: var(--neon-green);
             padding: 12px;
-            font-family: inherit;
             outline: none;
         }
 
@@ -111,29 +99,70 @@
 
         button:hover { background: #fff; box-shadow: 0 0 20px var(--neon-green); }
 
-        /* 广告位样式 */
-        .ad-box {
-            border: 1px dashed var(--neon-green);
-            padding: 10px;
-            margin-bottom: 20px;
-            font-size: 13px;
-            text-align: center;
-            animation: blink 2s infinite;
-        }
-
+        /* 会员菜单按钮样式 */
         .nav-btn {
             display: block;
             width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
+            padding: 12px;
+            margin-bottom: 15px;
             border: 1px solid var(--neon-green);
-            background: transparent;
+            background: rgba(0, 255, 65, 0.1);
             color: var(--neon-green);
-            text-align: left;
+            text-align: center;
             text-decoration: none;
+            font-weight: bold;
         }
 
-        .nav-btn:hover { background: rgba(0, 255, 65, 0.2); }
+        .nav-btn.vip {
+            border-color: var(--gold);
+            color: var(--gold);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        /* 弹窗样式 */
+        #vipModal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            background: #000;
+            border: 2px solid var(--gold);
+            padding: 30px;
+            z-index: 1000;
+            box-shadow: 0 0 30px var(--gold);
+        }
+
+        .modal-header {
+            font-size: 20px;
+            color: var(--gold);
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--gold);
+            padding-bottom: 10px;
+        }
+
+        .tier {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border: 1px solid #333;
+            margin-bottom: 10px;
+        }
+
+        .tier:hover { border-color: var(--gold); }
+
+        .price { color: var(--gold); }
+
+        .close-btn {
+            margin-top: 20px;
+            width: 100%;
+            background: transparent;
+            color: #666;
+            border: 1px solid #666;
+            padding: 10px;
+        }
 
         /* 底部快报 */
         footer {
@@ -146,18 +175,11 @@
             overflow: hidden;
         }
 
-        .ticker {
-            white-space: nowrap;
-            animation: ticker 20s linear infinite;
-        }
+        .ticker { white-space: nowrap; animation: ticker 20s linear infinite; }
 
         @keyframes ticker {
             0% { transform: translateX(100%); }
             100% { transform: translateX(-100%); }
-        }
-
-        @keyframes blink {
-            50% { opacity: 0.5; }
         }
 
         .line { margin-bottom: 8px; font-size: 14px; }
@@ -169,32 +191,47 @@
 
 <canvas id="matrix"></canvas>
 
+<div id="vipModal">
+    <div class="modal-header">XG-BRO 核心权限准入</div>
+    <div class="tier">
+        <span>[ 初级 ] 脚本小子 (24H)</span>
+        <span class="price">9.9 USDT</span>
+    </div>
+    <div class="tier">
+        <span>[ 中级 ] 逆向专家 (7 Days)</span>
+        <span class="price">49.9 USDT</span>
+    </div>
+    <div class="tier" style="border-color: var(--gold);">
+        <span>[ 顶级 ] 赛博战神 (永久)</span>
+        <span class="price">199.9 USDT</span>
+    </div>
+    <p style="font-size: 10px; color: #666;">* 购买请联系 TG: @XGBRO_SERVICE，支持 USDT 自动充值</p>
+    <button class="close-btn" onclick="toggleModal()">[ 关闭窗口 ]</button>
+</div>
+
 <header>
     <div class="logo">XG-BRO // CORE_V4</div>
-    <div style="font-size: 12px;">LOCATION: MYAWADDY_NODE_01</div>
+    <div style="font-size: 12px;">STATUS: ONLINE</div>
 </header>
 
 <main>
     <div class="sidebar-left">
-        <h3 style="border-bottom: 1px solid; padding-bottom: 5px;">[ 系统监控 ]</h3>
-        <div class="line">CORE_TEMP: <span class="stat-val">42°C</span></div>
-        <div class="line">RTX_5070: <span class="stat-val">98% LOAD</span></div>
+        <h3 style="border-bottom: 1px solid;">[ 系统监控 ]</h3>
+        <div class="line">RTX_5070: <span class="stat-val">TRAINING...</span></div>
         <div class="line">VRAM: <span class="stat-val">11.2GB/12GB</span></div>
-        <div class="line">TRAIN_DATA: <span class="stat-val">12,092 FILES</span></div>
-        <div class="line">STATUS: <span class="stat-val" style="color: yellow;">炼丹中...</span></div>
+        <div class="line">LOSS: <span class="stat-val">0.9638</span></div>
+        <div class="line">EPOCH: <span class="stat-val">0.176</span></div>
         <br>
-        <h3 style="border-bottom: 1px solid; padding-bottom: 5px;">[ 快速导航 ]</h3>
-        <a href="#" class="nav-btn">/ 渗透测试库</a>
-        <a href="#" class="nav-btn">/ C++ 逆向教程</a>
-        <a href="#" class="nav-btn">/ 驱动开发专区</a>
+        <h3 style="border-bottom: 1px solid;">[ 账户信息 ]</h3>
+        <div class="line">USER: <span class="stat-val">GUEST_778</span></div>
+        <div class="line">RANK: <span class="stat-val">非会员</span></div>
     </div>
 
     <div class="content-center">
         <div id="terminal">
-            <div class="line">>> 初始化 XG-BRO 赛博核心...</div>
-            <div class="line">>> 正在建立 Cloudflare 隧道... [OK]</div>
-            <div class="line">>> 正在同步 5070 算力节点... [OK]</div>
-            <div class="line">>> 系统免责声明：本站仅供技术交流，严禁非法用途！</div>
+            <div class="line">>> 系统初始化...</div>
+            <div class="line">>> 警告: 正在使用访客权限，部分核心语料库已锁定。</div>
+            <div class="line">>> 提示: 点击右侧 [获取核心权限] 解锁 Gemma 4 完整逆向能力。</div>
         </div>
         <div class="input-area">
             <input type="text" id="userInput" placeholder="Waiting for instructions..." onkeydown="if(event.keyCode==13) sendMessage()">
@@ -203,25 +240,20 @@
     </div>
 
     <div class="sidebar-right">
-        <h3 style="border-bottom: 1px solid; padding-bottom: 5px;">[ 赞助广告 ]</h3>
-        <div class="ad-box">
-            🔥 顶级 5090 算力租用 🔥<br>
-            24H 不间断炼丹服务<br>
-            联系 TG: @XGBRO_SERVICE
+        <h3 style="border-bottom: 1px solid;">[ 权限中心 ]</h3>
+        <a href="javascript:void(0)" class="nav-btn vip" onclick="toggleModal()">⚡ 获取核心权限 ⚡</a>
+        <a href="#" class="nav-btn">使用激活码</a>
+        
+        <h3 style="border-bottom: 1px solid; margin-top: 30px;">[ 赞助广告 ]</h3>
+        <div style="border: 1px dashed; padding: 10px; font-size: 12px; text-align: center;">
+            高端驱动开发定制<br>过 EAC/BE 检测<br>联系 TG 了解详情
         </div>
-        <div class="ad-box">
-            💎 VIP 内部插件库 💎<br>
-            包含最新驱动级 Hook 源码<br>
-            [ 限时开放 ]
-        </div>
-        <h3 style="border-bottom: 1px solid; padding-bottom: 5px;">[ 关于作者 ]</h3>
-        <p style="font-size: 12px;">X哥：专注于 C++ 底层逆向与 AI 自动化渗透。不睡觉的赛博狂人。</p>
     </div>
 </main>
 
 <footer>
     <div class="ticker">
-        [告警] 检测到全球 0-Day 漏洞更新... [提醒] 5070 炼丹进度已达 1%... [公告] xgbro.com 正式进入 AI 智能化阶段... [免责] 技术无罪，请守法使用...
+        [最新更新] 5070 炼丹进度已达 30%... [公告] 现已支持 USDT 自动充值卡密... [提醒] 永久会员限量发售中...
     </div>
 </footer>
 
@@ -229,18 +261,12 @@
     // 矩阵背景逻辑
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*";
-    const fontSize = 16;
-    const columns = canvas.width / fontSize;
-    const drops = Array(Math.floor(columns)).fill(1);
-
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    const letters = "01010101ABCDEF"; const fontSize = 16;
+    const columns = canvas.width / fontSize; const drops = Array(Math.floor(columns)).fill(1);
     function drawMatrix() {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#0f0";
-        ctx.font = fontSize + "px arial";
+        ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#0f0"; ctx.font = fontSize + "px arial";
         for (let i = 0; i < drops.length; i++) {
             const text = letters[Math.floor(Math.random() * letters.length)];
             ctx.fillText(text, i * fontSize, drops[i] * fontSize);
@@ -250,30 +276,28 @@
     }
     setInterval(drawMatrix, 33);
 
-    // 终端逻辑
-    const terminal = document.getElementById('terminal');
-    const userInput = document.getElementById('userInput');
-
-    function appendMessage(text, type = 'bot') {
-        const line = document.createElement('div');
-        line.className = 'line';
-        line.innerHTML = type === 'user' ? `<span class="user">X哥 > </span>${text}` : `<span>SYSTEM >> </span>${text}`;
-        terminal.appendChild(line);
-        terminal.scrollTop = terminal.scrollHeight;
+    // 弹窗逻辑
+    function toggleModal() {
+        const modal = document.getElementById('vipModal');
+        modal.style.display = (modal.style.display === 'block') ? 'none' : 'block';
     }
 
+    // 终端逻辑
     function sendMessage() {
-        const text = userInput.value.trim();
+        const text = document.getElementById('userInput').value.trim();
         if (!text) return;
-        appendMessage(text, 'user');
-        userInput.value = '';
+        const line = document.createElement('div');
+        line.className = 'line';
+        line.innerHTML = `<span style="color:#fff">X哥 > </span>${text}`;
+        document.getElementById('terminal').appendChild(line);
+        document.getElementById('userInput').value = '';
         
         setTimeout(() => {
-            appendMessage("正在通过 5070 核心检索语料库...");
-            setTimeout(() => {
-                appendMessage("结果：大脑当前处于“闭关”训练状态（进度1%）。请先研究左侧导航栏的教程，或咨询右侧广告位服务。");
-            }, 800);
-        }, 300);
+            const botLine = document.createElement('div');
+            botLine.className = 'line';
+            botLine.innerHTML = `<span>SYSTEM >> </span>检测到高价值请求... 但您的访客权限不足，请先充值会员。`;
+            document.getElementById('terminal').appendChild(botLine);
+        }, 500);
     }
 </script>
 
