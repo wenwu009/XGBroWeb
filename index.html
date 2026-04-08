@@ -2,228 +2,118 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>YW专属惊喜基地</title>
-    <link href="https://fonts.googleapis.com/css2?family=Long+Cang&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XG-BRO | 赛博智能核心</title>
     <style>
-        :root {
-            --heart-color: #ff4d6d;
-            --accent-color: #ffeb3b;
-        }
-
-        body { 
-            background: #05050a; 
-            margin: 0; 
-            padding: 0;
-            overflow: hidden; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
+        /* 整体赛博黑客风格设置 */
+        body {
+            background-color: #0a0a0a; /* 极客黑 */
+            color: #00ff41; /* 经典矩阵绿 */
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             height: 100vh;
-            /* 适配移动端动态高度 */
-            height: 100dvh;
-            font-family: 'Long Cang', cursive;
-            touch-action: none; /* 防止手机端误触缩放 */
+            margin: 0;
+            overflow: hidden;
         }
 
-        #universe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
+        #terminal {
+            width: 80%;
+            max-width: 800px;
+            height: 60vh;
+            border: 2px solid #00ff41;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            box-shadow: 0 0 15px #00ff41;
+            overflow-y: auto;
+            margin-bottom: 20px;
         }
 
-        /* 标题层级 */
-        .content {
-            z-index: 10;
-            text-align: center;
-            width: 90%;
-            pointer-events: none;
-            user-select: none;
-            animation: fadeIn 2s ease-in;
+        .line { margin-bottom: 10px; line-height: 1.4; }
+        .user-prompt { color: #008f11; font-weight: bold; }
+        .bot-response { color: #00ff41; text-shadow: 0 0 5px #00ff41; }
+
+        .input-area {
+            display: flex;
+            width: 80%;
+            max-width: 800px;
+            gap: 10px;
         }
 
-        h1 {
-            color: var(--accent-color);
-            /* 自动适配手机字号：最小1.5rem，最大2.5rem */
-            font-size: clamp(1.5rem, 8vw, 2.5rem);
-            text-shadow: 0 0 15px rgba(255, 235, 59, 0.5);
-            line-height: 1.5;
-            margin-bottom: 2rem;
+        input {
+            flex-grow: 1;
+            background: black;
+            border: 1px solid #00ff41;
+            color: #00ff41;
+            padding: 10px;
+            outline: none;
+            font-family: inherit;
         }
 
-        /* 核心爱心 */
-        .heart-box {
-            position: relative;
-            width: 100px;
-            height: 100px;
-            z-index: 10;
+        button {
+            background: #00ff41;
+            color: black;
+            border: none;
+            padding: 10px 20px;
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent; /* 去除手机点击蓝色高亮 */
+            font-weight: bold;
+            transition: 0.3s;
         }
 
-        .heart {
-            background-color: var(--heart-color);
-            width: 60px;
-            height: 60px;
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            transform: rotate(-45deg);
-            box-shadow: 0 0 30px rgba(255, 77, 109, 0.6);
-            animation: heartbeat 1.4s ease-in-out infinite;
+        button:hover {
+            background: #008f11;
+            color: #fff;
         }
 
-        .heart::before, .heart::after {
-            content: '';
-            background-color: var(--heart-color);
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            position: absolute;
-        }
-        .heart::before { top: -30px; left: 0; }
-        .heart::after { top: 0; left: 30px; }
-
-        @keyframes heartbeat {
-            0% { transform: scale(1) rotate(-45deg); filter: brightness(1); }
-            14% { transform: scale(1.12) rotate(-45deg); filter: brightness(1.1); }
-            28% { transform: scale(1) rotate(-45deg); }
-            42% { transform: scale(1.12) rotate(-45deg); }
-            70% { transform: scale(1) rotate(-45deg); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        /* 简单的滚动条美化 */
+        #terminal::-webkit-scrollbar { width: 5px; }
+        #terminal::-webkit-scrollbar-thumb { background: #008f11; }
     </style>
 </head>
 <body>
-    <canvas id="universe"></canvas>
+
+    <h1 style="text-shadow: 0 0 10px #00ff41;">[ XG-BRO CYBERNETIC CORE ]</h1>
     
-    <div class="content">
-        <h1>我亲爱的大傻鸟，<br>想我的时候记得点一下这个大大的爱心</h1>
+    <div id="terminal">
+        <div class="line bot-response">>> 系统就绪... 正在连接 5070 炼丹炉...</div>
+        <div class="line bot-response">>> 当前节点: 缅甸·妙瓦底</div>
+        <div class="line bot-response">>> 状态: 12092个语料文件正在加载中...</div>
     </div>
-    
-    <div class="heart-box" id="mainHeart">
-        <div class="heart"></div>
+
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="输入你的渗透/逆向指令..." onkeydown="if(event.keyCode==13) sendMessage()">
+        <button onclick="sendMessage()">发送</button>
     </div>
 
     <script>
-        const canvas = document.getElementById('universe');
-        const ctx = canvas.getContext('2d');
-        let w, h, dpr;
-        let stars = [], particles = [];
+        const terminal = document.getElementById('terminal');
+        const userInput = document.getElementById('userInput');
 
-        function initSize() {
-            // 处理高分屏模糊问题
-            dpr = window.devicePixelRatio || 1;
-            w = window.innerWidth;
-            h = window.innerHeight;
-            canvas.width = w * dpr;
-            canvas.height = h * dpr;
-            ctx.scale(dpr, dpr);
-            
-            stars = [];
-            // 初始化背景星星
-            for(let i=0; i<150; i++) {
-                stars.push({
-                    x: Math.random() * w,
-                    y: Math.random() * h,
-                    size: Math.random() * 1.2,
-                    blink: Math.random() * 0.03,
-                    opacity: Math.random()
-                });
-            }
-        }
-        window.addEventListener('resize', initSize);
-        initSize();
-
-        // 飞散的粒子爱心
-        class HeartParticle {
-            constructor(x, y) {
-                this.x = x;
-                this.y = y;
-                this.size = Math.random() * 8 + 4;
-                this.vx = (Math.random() - 0.5) * 12; // 移动端力度稍大点
-                this.vy = (Math.random() - 0.5) * 12;
-                this.opacity = 1;
-                this.rot = Math.random() * 360;
-                this.rotS = (Math.random() - 0.5) * 5;
-            }
-            draw() {
-                ctx.save();
-                ctx.translate(this.x, this.y);
-                ctx.rotate(this.rot * Math.PI / 180);
-                ctx.globalAlpha = this.opacity;
-                ctx.fillStyle = '#ff4d6d';
-                ctx.beginPath();
-                const d = this.size;
-                ctx.moveTo(0, 0);
-                ctx.bezierCurveTo(-d/2, -d/2, -d, d/3, 0, d);
-                ctx.bezierCurveTo(d, d/3, d/2, -d/2, 0, 0);
-                ctx.fill();
-                ctx.restore();
-            }
-            update() {
-                this.x += this.vx;
-                this.y += this.vy;
-                this.vy += 0.1; // 增加一点微弱的重力感
-                this.opacity -= 0.02;
-                this.rot += this.rotS;
-            }
+        function appendMessage(text, isUser = false) {
+            const line = document.createElement('div');
+            line.className = 'line ' + (isUser ? 'user-prompt' : 'bot-response');
+            line.innerText = (isUser ? 'X哥 > ' : 'SYSTEM >> ') + text;
+            terminal.appendChild(line);
+            terminal.scrollTop = terminal.scrollHeight;
         }
 
-        function animate() {
-            // 背景清空并保留轻微拖尾
-            ctx.fillStyle = 'rgba(5, 5, 15, 0.3)';
-            ctx.fillRect(0, 0, w, h);
+        function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
 
-            // 绘制星星
-            stars.forEach(s => {
-                s.opacity += s.blink;
-                if(s.opacity > 1 || s.opacity < 0) s.blink *= -1;
-                ctx.fillStyle = `rgba(255, 255, 255, ${Math.abs(s.opacity)})`;
-                ctx.beginPath();
-                ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-                ctx.fill();
-            });
+            appendMessage(text, true);
+            userInput.value = '';
 
-            // 绘制并更新点击粒子
-            particles.forEach((p, i) => {
-                p.update();
-                p.draw();
-                if(p.opacity <= 0) particles.splice(i, 1);
-            });
-
-            requestAnimationFrame(animate);
+            // 这是一个占位逻辑，明天等你的 API 调通了，就接在这里
+            setTimeout(() => {
+                appendMessage("正在呼叫 XG-Gemma-4 核心进行深度解析...");
+                setTimeout(() => {
+                    appendMessage("错误: 5070 核心正在闭关修炼（当前进度 1%），请明天早上 9:00 再试。");
+                }, 1000);
+            }, 500);
         }
-
-        // 兼容手机触摸和点击
-        const heartBtn = document.getElementById('mainHeart');
-        const handleEvent = (e) => {
-            let clientX, clientY;
-            if(e.type === 'touchstart') {
-                clientX = e.touches[0].clientX;
-                clientY = e.touches[0].clientY;
-            } else {
-                clientX = e.clientX;
-                clientY = e.clientY;
-            }
-            
-            for(let i=0; i<15; i++) {
-                particles.push(new HeartParticle(clientX, clientY));
-            }
-        };
-
-        heartBtn.addEventListener('click', handleEvent);
-        heartBtn.addEventListener('touchstart', handleEvent, {passive: true});
-
-        animate();
     </script>
 </body>
 </html>
